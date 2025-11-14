@@ -5,12 +5,14 @@ import mongoose from "mongoose";
 
 import authRoutes from "./routes/authRoute.js";
 import jobRoutes from "./routes/jobRoute.js";
+import connectDB from "./Database/db.js";
 
 dotenv.config();
+connectDB();
 
 const app = express();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 
 app.use(cors());
 
@@ -24,5 +26,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port : ${port}`);
 });

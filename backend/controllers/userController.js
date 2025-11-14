@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.SECRET_KEY, {
@@ -11,7 +12,7 @@ const generateToken = (id) => {
 
 const handleRegister = async (req, res) => {
   try {
-    const { name, email, password,role } = req.body;
+    const { name, email, password, role } = req.body;
     if (!name || !email || !password || !role) {
       return res.status(404).json({ message: "Please fill all details" });
     }
@@ -26,7 +27,7 @@ const handleRegister = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role
+      role,
     });
     return res.status(200).json({
       message: "User Registered Successfully",
@@ -69,7 +70,7 @@ const handleLogin = async (req, res) => {
         email: user.email,
         role: user.role,
       },
-      token: generateToken(user._id,user.role),
+      token: generateToken(user._id, user.role),
     });
   } catch (error) {
     return res.status(401).json({ message: "Login failed!!" });
