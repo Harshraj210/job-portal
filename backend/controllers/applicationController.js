@@ -37,7 +37,9 @@ const getMyApplication = async (req, res) => {
 
     const applications = await Application.findOne({
       applicant: applicantId,
-    }).populate("job", "title companyName location jobType salary");
+    })
+      .populate("job", "title companyName location jobType salary")
+      .sort({ createdAt: -1 });
     return res.status(200).json(applications);
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
@@ -68,7 +70,7 @@ const getApplicationsForJob = async (req, res) => {
 };
 const updateApplicationStatus = async (req, res) => {
   try {
-    const { status } = req.body; // Recruiter sends the status
+    const { status } = req.body; // Recruiter sends the statuses
     const recruiterId = req.user.id;
     const { appId } = req.params;
     if (!["pending", "reviewed", "rejected"].includes(status)) {
@@ -92,11 +94,16 @@ const updateApplicationStatus = async (req, res) => {
     await application.save();
     return res.status(200).json(application);
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        message: "Error in updating the Application status",
-        error: error.message,
-      });
+    return res.status(500).json({
+      message: "Error in updating the Application status",
+      error: error.message,
+    });
   }
+};
+
+export {
+  applyForjob,
+  getApplicationsForJob,
+  updateApplicationStatus,
+  getMyApplication,
 };
