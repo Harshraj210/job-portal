@@ -37,6 +37,15 @@ const userSchema = new mongoose.Schema(
       education: { type: String },
       qualifications: { type: String },
     },
+    otp: {
+      type: String,
+    },
+    otpExpiry: { 
+      type: Date, 
+    },
+    refreshToken: {
+      type: String,
+    },
   },
   {
     timestamps: true,
