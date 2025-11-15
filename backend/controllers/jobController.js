@@ -105,3 +105,8 @@
     }
   };
   export { getallJobs, getJobById, createJob, getMyJobs, updateJob, deleteJob };
+
+  export async function getAlljobs(req,res){
+    const jobs=await Job.find({});
+
+  }

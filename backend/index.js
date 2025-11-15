@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import cors from "cors";
+import cors from "cors"; // security purpose
 import mongoose from "mongoose";
 
 import authRoutes from "./routes/authRoute.js";
@@ -34,7 +34,7 @@ app.use("/api/jobs", jobRoutes);
 app.get('/', (req, res) => {
   return res
     .status(200)
-    .json({ message: "Welcome to the Job Portal Backend API" });
+    .json({ message: "Server is running" });
 });
 
 app.listen(port, () => {

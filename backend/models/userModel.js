@@ -16,13 +16,26 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    phoneNumber: {
+      type: Number,
+      required: true,
+    },
+    profilePicture: {
+      type: String,
+    },
     role: {
       type: String,
       required: true,
-      enum: ['applicant', 'recruiter'],
-      default: 'applicant',
-
-      
+      enum: ["applicant", "recruiter"],
+      default: "applicant",
+    },
+    profile: {
+      bio: { type: String },
+      skills: { type: String },
+      resume: { type: String },
+      experience: { type: String },
+      education: { type: String },
+      qualifications: { type: String },
     },
   },
   {

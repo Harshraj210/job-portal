@@ -12,14 +12,20 @@ const generateToken = (id) => {
 
 const handleRegister = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
-    if (!name || !email || !password || !role) {
+    const { name, email, password, role, phoneNumber } = req.body;
+    if (!name || !email || !password || !role || !phoneNumber) {
       return res.status(404).json({ message: "Please fill all details" });
     }
 
-    const userexist = await User.findOne({ email });
+    const userexist = await User.findOne({ $or: [{ email }, { phoneNumber }] });
     if (userexist) {
-      return res.status(404).json({ message: "user already exist!!" });
+      if (userexist.email === email) {
+        return res.status(409).json({ message: "Email already in use" });
+      }
+      if (userexist.phoneNumber === phoneNumber) {
+        return res.status(409).json({ message: "Phone number already in use" });
+      }
+      return res.status(409).json({ message: "User already exist!!" });
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -28,6 +34,8 @@ const handleRegister = async (req, res) => {
       email,
       password: hashedPassword,
       role,
+      phoneNumber,
+      profilePicture: req.file?.path,
     });
     return res.status(200).json({
       message: "User Registered Successfully",
@@ -36,6 +44,8 @@ const handleRegister = async (req, res) => {
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
+        phoneNumber: newUser.phoneNumber,
+        profilePicture: newUser.profilePicture,
       },
       token: generateToken(newUser._id, newUser.role),
     });
