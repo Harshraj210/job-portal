@@ -40,12 +40,18 @@ const userSchema = new mongoose.Schema(
     otp: {
       type: String,
     },
-    otpExpiry: { 
-      type: Date, 
+    otpExpiry: {
+      type: Date,
     },
     refreshToken: {
       type: String,
     },
+    savedJobs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Job",
+      },
+    ],
   },
   {
     timestamps: true,

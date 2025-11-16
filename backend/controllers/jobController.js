@@ -141,4 +141,30 @@ const filterJobs = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-export { getallJobs, getJobById, createJob, getMyJobs, updateJob, deleteJob, filterJobs,searchJobs };
+const saveJob = async (req, res) => {
+  try {
+    const userId = req.user.id; // From protectRoute
+    const jobId = req.params.id; // Job to be saved
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.savedJobs.includes(jobId)) {
+      return res.status(400).json({ message: "Job already saved" });
+    }
+
+    user.savedJobs.push(jobId);
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ message: "Job saved successfully", savedJobs: user.savedJobs });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+export { getallJobs, getJobById, createJob, getMyJobs, updateJob, deleteJob, filterJobs,searchJobs,saveJob };
