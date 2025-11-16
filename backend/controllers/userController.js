@@ -1,11 +1,13 @@
 import jwt from "jsonwebtoken";
-import bcrypt, { hash } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
 import dotenv from "dotenv";
 import crypto from "crypto";
 import generateOTP from "../utils/otp_Generator.js";
+import sendEmail from "../utils/send_email.js";
 
 dotenv.config();
+
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.SECRET_KEY, {
     expiresIn: "30d",
@@ -14,7 +16,7 @@ const generateToken = (id, role) => {
 
 const handleRegister = async (req, res) => {
   try {
-    const { name, email, password, role, phoneNumber } = req.body;
+    let { name, email, password, role, phoneNumber } = req.body;
     name = (name || "").trim();
     email = (email || "").trim().toLowerCase();
     phoneNumber = (phoneNumber || "").trim();
@@ -68,7 +70,7 @@ const handleRegister = async (req, res) => {
 
 const handleLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
     email = (email || "").trim().toLowerCase();
 
     if (!email || !password) {
@@ -125,34 +127,21 @@ const logOut = async (req, res) => {
 };
 
 const forgotPassword = async (req, res) => {
-  const { email , password } = req.body;
+  return requestotp(req, res);
+};
+
+const requestotp = async (req, res) => {
   try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error in resetting password", error });
-  }
-};
-const requestotp = async (req, res) => {
-  try{
-    const { email } = req.body;
-    if(!email){
-      return res.status(400).json({ message:"Email is required"});
-    }
-    const user = await User.findOne({ email });
-    if(!user){
-      return res.status(404).json({ message: "User not found" });
-  }
     const otp = generateOTP();
-    const hashedotp= crypto
-      .createHash('sha256')
-      .update(otp)
-      .digest('hex');
+    const hashedotp = crypto.createHash("sha256").update(otp).digest("hex");
 
     user.otp = hashedotp;
     user.otpExpiry = Date.now() + 5 * 60 * 1000;
@@ -163,16 +152,11 @@ const requestotp = async (req, res) => {
       to: user.email,
       subject: "Your OTP Code",
       text: `Your OTP is : ${otp}. It is valid for 5 minutes.`,
-    })
+    });
 
-    return res
-    .status(200)
-    .json({ message: "OTP sent to your email" });
-
-  } catch(error){
-    return res
-      .status(500)
-      .json({ message: "Error in generating OTP", error });
+    return res.status(200).json({ message: "OTP sent to your email" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error in generating OTP", error });
   }
 };
 
@@ -180,32 +164,41 @@ const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
     if (!email || !otp) {
-      return res
-      .status(400)
-      .json({ message: "Email and OTP are required" });
+      return res.status(400).json({ message: "Email and OTP are required" });
     }
-    if (User.otp !== hashedotp || User.otpExpiry < Date.now()) {
-      return res
-        .status(400)
-        .json({ message: "Invalid or expired OTP" });
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+  const hashedotp = crypto.createHash("sha256").update(otp).digest("hex");
+    if (user.otp !== hashedotp ) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+    if (user.otpExpiry < Date.now()) {
+      return res.status(400).json({ message: "OTP has expired" });
+    }
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+
+    await user.save();
+    return res.status(200).json({ message: "OTP verified successfully" });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error in verifying OTP", error });
+    return res.status(500).json({ message: "Error in verifying OTP", error });
   }
 };
 
 const resetPassword = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, otp } = req.body;
 
-    if (!email || !password)
-      return res.status(400).json({ message: "Email and password required" });
+    if (!email || !password || !otp)
+      return res.status(400).json({ message: "Email, password and OTP are required" });
 
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user) {
       return res.status(400).json({ message: "User not found" });
+    }
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
@@ -215,17 +208,19 @@ const resetPassword = async (req, res) => {
 
     await user.save();
 
-    return res
-    .status(200)
-    .json({ message: "Password reset successful" });
-
+    return res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
     console.error(error);
-    return res
-    .status(500)
-    .json({ message: "Error resetting password" });
+    return res.status(500).json({ message: "Error resetting password" });
   }
 };
 
-
-export { handleRegister, handleLogin, logOut, forgotPassword , requestotp, verifyOtp, resetPassword};
+export {
+  handleRegister,
+  handleLogin,
+  logOut,
+  forgotPassword,
+  requestotp,
+  verifyOtp,
+  resetPassword,
+};
