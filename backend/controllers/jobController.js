@@ -141,4 +141,4 @@ const filterJobs = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-export { getallJobs, getJobById, createJob, getMyJobs, updateJob, deleteJob };
+export { getallJobs, getJobById, createJob, getMyJobs, updateJob, deleteJob, filterJobs,searchJobs };

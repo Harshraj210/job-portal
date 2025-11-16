@@ -27,3 +27,11 @@ export const isRecruiter = (req, res, next) => {
     res.status(403).json({ message: "Not a recruiter" });
   }
 };
+// Checks if you're an applicant
+export const isApplicant = (req, res, next) => {
+  if (req.user && req.user.role === 'applicant') {
+    next();
+  } else {
+    return res.status(403).json({ message: 'Forbidden: Not an applicant' });
+  }
+};

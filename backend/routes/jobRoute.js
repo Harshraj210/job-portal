@@ -16,6 +16,8 @@ const router = express.Router()
 
 router.get('/', getallJobs);
 router.get("/:id",getJobById)
+router.get('/search', searchJobs);
+router.get('/filter', filterJobs);
 
 // protected Routes
 
