@@ -5,17 +5,14 @@ import toast from "react-hot-toast";
 import { Mail, Lock, HelpCircle, ArrowRight, Loader2 } from "lucide-react";
 
 const Login = () => {
-  // for storing email and pass   
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-    const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
-  // redirect after login
   const navigate = useNavigate();
 
-  // formdata  when user writes it updates 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -26,14 +23,15 @@ const Login = () => {
     try {
       await login(formData.email, formData.password);
       toast.success("Welcome back!");
-      navigate("/jobs");
+      navigate("/"); 
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     } finally {
       setIsLoading(false);
     }
   };
-  return(
+
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-purple-100 p-4 relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-[#7315c7] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
@@ -57,7 +55,7 @@ const Login = () => {
                 name="email"
                 required
                 placeholder="you@example.com"
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm"
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm text-gray-900"
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -74,7 +72,7 @@ const Login = () => {
                 name="password"
                 required
                 placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm"
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm text-gray-900"
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -120,5 +118,6 @@ const Login = () => {
       </button>
     </div>
   );
+};
 
-}
+export default Login;
