@@ -1,5 +1,5 @@
 import express from "express";
-import { protect, isRecruiter,isApplicant } from "../middleware/authMiddleware.js";
+import { protectRoute, isRecruiter,isApplicant } from "../middleware/authMiddleware.js";
 
 import {
   getallJobs,
@@ -23,15 +23,15 @@ router.get('/', getallJobs);
 router.get("/:id",getJobById)
 router.get('/search', searchJobs);
 router.get('/filter', filterJobs);
-router.get('/saved', protect, isApplicant, getSavedJobs);
+router.get('/saved', protectRoute, isApplicant, getSavedJobs);
 
 // protected Routes
 
-router.post('/', protect, isRecruiter, createJob);
-router.get('/myjobs', protect, isRecruiter, getMyJobs);
-router.put('/:id', protect, isRecruiter, updateJob);
-router.delete('/:id', protect, isRecruiter, deleteJob);
-router.post('/:id/save', protect, isApplicant, saveJob);
-router.delete('/:id/save', protect, isApplicant, unsaveJob);
+router.post('/', protectRoute, isRecruiter, createJob);
+router.get('/myjobs', protectRoute, isRecruiter, getMyJobs);
+router.put('/:id', protectRoute, isRecruiter, updateJob);
+router.delete('/:id', protectRoute, isRecruiter, deleteJob);
+router.post('/:id/save', protectRoute, isApplicant, saveJob);
+router.delete('/:id/save', protectRoute, isApplicant, unsaveJob);
 
 export default router

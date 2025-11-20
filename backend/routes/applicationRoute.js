@@ -1,7 +1,7 @@
 import express from 'express';
 import {
-  applyForJob,
-  getMyApplications,
+  applyForjob,
+  getMyApplication,
   getApplicationsForJob,
   updateApplicationStatus,
 } from '../controllers/applicationController.js';
@@ -11,8 +11,8 @@ import {
   isRecruiter,
 } from '../middleware/authMiddleware.js';
 const router = express.Router();
-router.post('/:jobId', protectRoute, isApplicant, applyForJob);
-router.get('/my-applications', protectRoute, isApplicant, getMyApplications);
+router.post('/:jobId', protectRoute, isApplicant, applyForjob);
+router.get('/my-applications', protectRoute, isApplicant, getMyApplication);
 // Update an application's status
 router.get(
   '/job/:jobId',
