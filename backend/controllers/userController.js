@@ -27,6 +27,8 @@ const handleRegister = async (req, res) => {
 
     const userexist = await User.findOne({ $or: [{ email }, { phoneNumber }] });
     if (userexist) {
+      console.log("User Exist", userexist);
+      
       if (userexist.email === email) {
         return res
           .status(409)
@@ -103,28 +105,14 @@ const handleLogin = async (req, res) => {
   }
 };
 
-const logOut = async (req, res) => {
-  try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    await User.findByIdAndUpdate(req.user.id, { refreshToken: " " });
-
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: true,
-    });
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: true,
-    });
-
-    return res.status(200).json({ message: "Logged out successfully" });
-  } catch (error) {
-    console.error("Error during logout:", error);
-    return res.status(500).json({ message: "Error during logout" });
+ const logOut = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
   }
+
+  return res.status(200).json({ message: "Logged out successfully" });
 };
+
 
 const forgotPassword = async (req, res) => {
   return requestotp(req, res);
