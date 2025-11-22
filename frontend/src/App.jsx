@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import PostJob from "./pages/PostJob";
 import Login from "./pages/Login";
 import { Toaster } from "react-hot-toast";
 import Register from "./pages/Register";
@@ -11,14 +12,12 @@ import Jobs from "./pages/Jobs";
 import JobDetails from "./pages/JobDetails";
 import Companies from "./pages/Companies";
 import NotFound from "./pages/NotFound";
-import About from './pages/About'; 
-
-
+import About from "./pages/About";
 
 function App() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-       <Toaster position="top-right" />
+      <Toaster position="top-right" />
       {/* Navbar always visible */}
       <Navbar />
 
@@ -26,7 +25,7 @@ function App() {
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
-           <Route path="/about" element={<About />} />
+          <Route path="/about" element={<About />} />
 
           {/* Auth */}
           <Route path="/login" element={<Login />} />
@@ -41,6 +40,8 @@ function App() {
 
           {/* Recruiter */}
           <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
+          <Route path="/recruiter-dashboard/post-job" element={<PostJob />} />
+         
 
           {/* 404 Page */}
           <Route path="*" element={<NotFound />} />
