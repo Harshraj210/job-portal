@@ -5,7 +5,7 @@ import Job from "../models/jobModel.js";
 
 const getallJobs = async (req, res) => {
   try {
-    const jobs = await Job.find({}).populate("postedBy", "name");
+    const jobs = await Job.find({}).populate("companyName");
     return res.status(200).json(jobs);
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
@@ -15,8 +15,7 @@ const getallJobs = async (req, res) => {
 const getJobById = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id).populate(
-      "postedBy",
-      "name companyName"
+      "companyName"
     );
     if (!job) {
       return res.status(404).json({ message: "Job not found buddy !!" });
@@ -38,6 +37,7 @@ const createJob = async (req, res) => {
       title,
       description,
       companyName,
+      companyLogo,
       location,
       salary,
       jobType,

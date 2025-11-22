@@ -23,15 +23,17 @@ router.get('/', getallJobs);
 router.get("/:id",getJobById)
 router.get('/search', searchJobs);
 router.get('/filter', filterJobs);
-router.get('/saved', protectRoute, isApplicant, getSavedJobs);
 
-// protected Routes
 
-router.post('/', protectRoute, isRecruiter, createJob);
+
+router.post('/create', protectRoute, isRecruiter, createJob);
 router.get('/myjobs', protectRoute, isRecruiter, getMyJobs);
-router.put('/:id', protectRoute, isRecruiter, updateJob);
-router.delete('/:id', protectRoute, isRecruiter, deleteJob);
+router.put('/:id/update', protectRoute, isRecruiter, updateJob);
+router.delete('/:id/delete', protectRoute, isRecruiter, deleteJob);
+
+
+router.get('/saved', protectRoute, isApplicant, getSavedJobs);
 router.post('/:id/save', protectRoute, isApplicant, saveJob);
-router.delete('/:id/save', protectRoute, isApplicant, unsaveJob);
+router.delete('/:id/unsave', protectRoute, isApplicant, unsaveJob);
 
 export default router
