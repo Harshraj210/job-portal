@@ -8,6 +8,7 @@ const sendEmail = async ({ to, subject, text }) => {
   const transporter = nodemailer.createTransport({
     host: process.env.MAIL_SMTP_HOST,
     port: Number(process.env.MAIL_SMTP_PORT),
+    secure: false,
     auth: {
       user: process.env.MAIL_SMTP_USER,
       pass: process.env.MAIL_SMTP_PASS,
@@ -33,7 +34,7 @@ const sendEmail = async ({ to, subject, text }) => {
   const plain = mailGenerator.generatePlaintext(emailBody);
 
   return transporter.sendMail({
-    from: process.env.MAIL_SMTP_USER,
+    from: process.env.MAIL_SMTP_FROM,
     to,
     subject,
     text: plain,
