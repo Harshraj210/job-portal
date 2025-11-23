@@ -9,12 +9,14 @@ import {
   DollarSign,
   Loader2,
   ArrowRight,
+  Building2,
 } from "lucide-react";
 
 const PostJob = () => {
   const [formData, setFormData] = useState({
     title: "",
     companyName: "",
+    companyLogo: "",
     location: "",
     salary: "",
     jobType: "Full-time",
@@ -56,7 +58,8 @@ const PostJob = () => {
         className="bg-white w-full max-w-2xl shadow-2xl rounded-3xl px-10 py-12 border border-gray-100 animate-fade-in"
       >
         <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
-          Post <span className="text-[#7315c7]">A</span>   New <span className="text-[#7315c7]">Job</span>
+          Post <span className="text-[#7315c7]">A</span> New{" "}
+          <span className="text-[#7315c7]">Job</span>
         </h2>
 
         <p className="text-gray-600 text-center mb-8">
@@ -84,7 +87,8 @@ const PostJob = () => {
             Company Name
           </label>
           <div className="relative">
-            <Tags className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+            <Building2 className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+
             <input
               type="text"
               name="companyName"
@@ -93,6 +97,25 @@ const PostJob = () => {
               value={formData.companyName}
               onChange={handleChange}
               className="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100 outline-none transition"
+            />
+          </div>
+
+          {/* Company Logo */}
+          {/* Company Logo */}
+          <label className="text-sm font-medium text-gray-700">
+            Company Logo URL
+          </label>
+          <div className="relative">
+            <Building2 className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+            <input
+              type="text"
+              name="companyLogo"
+              placeholder="https://logo.com/logo.png"
+              value={formData.companyLogo}
+              onChange={handleChange}
+              className="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl
+      focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100
+      outline-none transition"
             />
           </div>
 
