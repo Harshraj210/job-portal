@@ -203,6 +203,7 @@ const resetPassword = async (req, res) => {
     return res.status(500).json({ message: "Error resetting password" });
   }
 };
+// logged-in user profil
 const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
@@ -216,6 +217,33 @@ const getProfile = async (req, res) => {
     res.status(500).json({ message: "Error fetching profile", error });
   }
 };
+// Update profile
+const updateProfile = async (req, res) => {
+  try {
+    const { bio, skills, experience, education, qualifications } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        profile: {
+          bio,
+          skills,
+          experience,
+          education,
+          qualifications,
+        },
+      },
+      { new: true }
+    ).select("-password");
+
+    res.status(200).json({
+      message: "Profile updated successfully!",
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating profile", error });
+  }
+};
 
 export {
   handleRegister,
@@ -225,4 +253,6 @@ export {
   requestotp,
   verifyOtp,
   resetPassword,
+  updateProfile,
+  getProfile,
 };
