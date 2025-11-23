@@ -14,7 +14,7 @@ import Companies from "./pages/Companies";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Profile from "./pages/Profile";
-
+import ManageJobs from "./pages/ManageJobs";
 
 function App() {
   return (
@@ -44,7 +44,10 @@ function App() {
           <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
           <Route path="/recruiter-dashboard/post-job" element={<PostJob />} />
           <Route path="/profile" element={<Profile />} />
-         
+          <Route
+            path="/recruiter-dashboard/manage-jobs"
+            element={<ManageJobs />}
+          />
 
           {/* 404 Page */}
           <Route path="*" element={<NotFound />} />
