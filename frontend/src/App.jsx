@@ -41,6 +41,7 @@ function App() {
           {/* Recruiter */}
           <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
           <Route path="/recruiter-dashboard/post-job" element={<PostJob />} />
+          <Route path="/profile" element={<Profile />} />
          
 
           {/* 404 Page */}
