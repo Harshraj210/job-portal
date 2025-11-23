@@ -2,8 +2,8 @@ import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Menu, X, User, LogOut, Briefcase } from "lucide-react";
-import { gsap } from 'gsap';
-import { GoArrowUpRight } from 'react-icons/go';
+import { gsap } from "gsap";
+import { GoArrowUpRight } from "react-icons/go";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -21,34 +21,30 @@ const Navbar = () => {
     setIsOpen(false);
   };
 
-
   const mobileNavItems = [
     {
       label: "Navigation",
-      bgColor: "#f3e8ff", 
-      textColor: "#4c1d95", 
+      bgColor: "#f3e8ff",
+      textColor: "#4c1d95",
       links: [
         { label: "Home", href: "/" },
         { label: "Find Jobs", href: "/jobs" },
         { label: "Companies", href: "/companies" },
         { label: "About Us", href: "/about" },
-
-      ]
-    }
+      ],
+    },
   ];
 
   if (user) {
     mobileNavItems.push({
       label: `Profile (${user.name})`,
-      bgColor: "#7315c7", 
+      bgColor: "#7315c7",
       textColor: "#fff",
       links: [
-        ...(user.role === "recruiter" 
-          ? [{ label: "Recruiter Dashboard", href: "/recruiter-dashboard" }] 
-          : [{ label: "My Applications", href: "/applications" }]
-        ),
-        
-      ]
+        ...(user.role === "recruiter"
+          ? [{ label: "Recruiter Dashboard", href: "/recruiter-dashboard" }]
+          : [{ label: "My Applications", href: "/applications" }]),
+      ],
     });
   } else {
     mobileNavItems.push({
@@ -58,8 +54,8 @@ const Navbar = () => {
       links: [
         { label: "Login", href: "/login" },
         { label: "Sign Up", href: "/register" },
-        { label: "Post a Job", href: "/register-company" }
-      ]
+        { label: "Post a Job", href: "/register-company" },
+      ],
     });
   }
 
@@ -69,26 +65,26 @@ const Navbar = () => {
     if (!navEl) return;
 
     // Initial Set: Hidden and height 0
-    gsap.set(navEl, { height: 0, opacity: 0, display: 'none' });
-    
+    gsap.set(navEl, { height: 0, opacity: 0, display: "none" });
+
     const tl = gsap.timeline({ paused: true });
 
     tl.to(navEl, {
-      display: 'block',
-      duration: 0
+      display: "block",
+      duration: 0,
     })
-    .to(navEl, {
-      height: 'auto',
-      opacity: 1,
-      duration: 0.4,
-      ease: 'power3.out'
-    })
-    .fromTo(
-      cardsRef.current,
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.4, ease: 'power3.out', stagger: 0.08 },
-      '-=0.2'
-    );
+      .to(navEl, {
+        height: "auto",
+        opacity: 1,
+        duration: 0.4,
+        ease: "power3.out",
+      })
+      .fromTo(
+        cardsRef.current,
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4, ease: "power3.out", stagger: 0.08 },
+        "-=0.2"
+      );
 
     tlRef.current = tl;
 
@@ -97,7 +93,6 @@ const Navbar = () => {
     };
   }, []);
 
-  
   useEffect(() => {
     if (tlRef.current) {
       if (isOpen) {
@@ -118,10 +113,13 @@ const Navbar = () => {
       <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            
             {/* --- LOGO --- */}
             <div className="flex items-center z-50">
-              <Link to="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
+              <Link
+                to="/"
+                className="flex items-center gap-2"
+                onClick={() => setIsOpen(false)}
+              >
                 <div className="w-8 h-8 bg-[#7315c7] rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md shadow-purple-200">
                   J
                 </div>
@@ -133,10 +131,30 @@ const Navbar = () => {
 
             {/* --- DESKTOP MENU --- */}
             <div className="hidden md:flex items-center space-x-8">
-              <Link to="/" className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors">Home</Link>
-              <Link to="/jobs" className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors">Find Jobs</Link>
-              <Link to="/companies" className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors">Companies</Link>
-              <Link to="/about" className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors">About us</Link>
+              <Link
+                to="/"
+                className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
+              >
+                Home
+              </Link>
+              <Link
+                to="/jobs"
+                className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
+              >
+                Find Jobs
+              </Link>
+              <Link
+                to="/companies"
+                className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
+              >
+                Companies
+              </Link>
+              <Link
+                to="/about"
+                className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
+              >
+                About us
+              </Link>
 
               {user ? (
                 <div className="flex items-center gap-4 pl-4 border-l border-gray-200">
@@ -146,19 +164,42 @@ const Navbar = () => {
                     </div>
                     {user.name}
                   </span>
+                  <Link
+                    to="/profile"
+                    className="text-sm text-[#7315c7] font-semibold hover:underline"
+                  >
+                    My Profile
+                  </Link>
                   {user.role === "recruiter" && (
-                    <Link to="/recruiter-dashboard" className="bg-purple-50 text-[#7315c7] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-100 transition-colors">
+                    <Link
+                      to="/recruiter-dashboard"
+                      className="bg-purple-50 text-[#7315c7] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-100 transition-colors"
+                    >
                       Dashboard
                     </Link>
                   )}
-                  <button onClick={handleLogout} className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors" title="Logout">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors"
+                    title="Logout"
+                  >
                     <LogOut className="w-5 h-5" />
                   </button>
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
-                  <Link to="/login" className="text-gray-600 hover:text-[#7315c7] font-medium px-3 py-2 rounded-lg hover:bg-purple-50 transition-all">Login</Link>
-                  <Link to="/register" className="bg-[#7315c7] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[#9324bc] shadow-lg shadow-purple-200 hover:shadow-purple-300 transition-all active:scale-95">Sign Up</Link>
+                  <Link
+                    to="/login"
+                    className="text-gray-600 hover:text-[#7315c7] font-medium px-3 py-2 rounded-lg hover:bg-purple-50 transition-all"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="bg-[#7315c7] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[#9324bc] shadow-lg shadow-purple-200 hover:shadow-purple-300 transition-all active:scale-95"
+                  >
+                    Sign Up
+                  </Link>
                 </div>
               )}
             </div>
@@ -169,7 +210,11 @@ const Navbar = () => {
                 onClick={() => setIsOpen(!isOpen)}
                 className="text-gray-600 hover:text-[#7315c7] p-2 rounded-md hover:bg-purple-50 transition-colors"
               >
-                {isOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+                {isOpen ? (
+                  <X className="w-7 h-7" />
+                ) : (
+                  <Menu className="w-7 h-7" />
+                )}
               </button>
             </div>
           </div>
@@ -187,29 +232,38 @@ const Navbar = () => {
                   key={idx}
                   className="p-5 rounded-xl"
                   ref={(el) => setCardRef(el, idx)}
-                  style={{ backgroundColor: item.bgColor, color: item.textColor }}
+                  style={{
+                    backgroundColor: item.bgColor,
+                    color: item.textColor,
+                  }}
                 >
-                  <div className="text-lg font-bold mb-3 border-b border-white/20 pb-2">{item.label}</div>
+                  <div className="text-lg font-bold mb-3 border-b border-white/20 pb-2">
+                    {item.label}
+                  </div>
                   <div className="flex flex-col gap-3">
                     {item.links.map((lnk, i) => (
-                      <Link 
-                        key={i} 
-                        to={lnk.href} 
+                      <Link
+                        key={i}
+                        to={lnk.href}
                         onClick={() => setIsOpen(false)}
                         className="flex items-center justify-between group cursor-pointer"
                       >
-                        <span className="font-medium group-hover:underline underline-offset-2">{lnk.label}</span>
+                        <span className="font-medium group-hover:underline underline-offset-2">
+                          {lnk.label}
+                        </span>
                         <GoArrowUpRight className="opacity-70 group-hover:opacity-100 transition-opacity" />
                       </Link>
                     ))}
-                    
+
                     {/* Special Logout Button logic for the Profile card */}
                     {user && item.label.includes("Profile") && (
-                       <button
+                      <button
                         onClick={handleLogout}
                         className="flex items-center justify-between group cursor-pointer text-left w-full mt-2 pt-2 border-t border-white/20"
                       >
-                        <span className="font-medium group-hover:underline underline-offset-2">Logout</span>
+                        <span className="font-medium group-hover:underline underline-offset-2">
+                          Logout
+                        </span>
                         <LogOut className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
                       </button>
                     )}
@@ -219,12 +273,11 @@ const Navbar = () => {
             </div>
           </nav>
         </div>
-        
       </nav>
-      
+
       {/* Overlay Backdrop */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 md:hidden"
           onClick={() => setIsOpen(false)}
         />

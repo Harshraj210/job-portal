@@ -13,6 +13,8 @@ import JobDetails from "./pages/JobDetails";
 import Companies from "./pages/Companies";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
+import Profile from "./pages/Profile";
+
 
 function App() {
   return (
@@ -41,6 +43,7 @@ function App() {
           {/* Recruiter */}
           <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
           <Route path="/recruiter-dashboard/post-job" element={<PostJob />} />
+          <Route path="/profile" element={<Profile />} />
          
 
           {/* 404 Page */}

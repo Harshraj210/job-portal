@@ -1,5 +1,5 @@
 import express from "express"
-import { handleLogin,handleRegister,logOut,forgotPassword,requestotp,verifyOtp,resetPassword } from "../controllers/userController.js"
+import { handleLogin,handleRegister,logOut,forgotPassword,requestotp,verifyOtp,resetPassword,updateProfile,getProfile } from "../controllers/userController.js"
 import { protectRoute } from "../middleware/authMiddleware.js"
 import sendEmail from "../utils/send_email.js";
 
@@ -22,5 +22,7 @@ router.post("/send-email", async (req, res) => {
 router.post("/request-otp", requestotp);
 router.post("/verify-otp", verifyOtp);
 router.post("/reset-password", resetPassword);
+router.get("/profile", protect, getProfile);
+router.put("/profile", protect, updateProfile);
 
 export default router;

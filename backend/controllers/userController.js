@@ -28,7 +28,7 @@ const handleRegister = async (req, res) => {
     const userexist = await User.findOne({ $or: [{ email }, { phoneNumber }] });
     if (userexist) {
       console.log("User Exist", userexist);
-      
+
       if (userexist.email === email) {
         return res
           .status(409)
@@ -105,14 +105,13 @@ const handleLogin = async (req, res) => {
   }
 };
 
- const logOut = (req, res) => {
+const logOut = (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   return res.status(200).json({ message: "Logged out successfully" });
 };
-
 
 const forgotPassword = async (req, res) => {
   return requestotp(req, res);
@@ -159,8 +158,8 @@ const verifyOtp = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-  const hashedotp = crypto.createHash("sha256").update(otp).digest("hex");
-    if (user.otp !== hashedotp ) {
+    const hashedotp = crypto.createHash("sha256").update(otp).digest("hex");
+    if (user.otp !== hashedotp) {
       return res.status(400).json({ message: "Invalid OTP" });
     }
     if (user.otpExpiry < Date.now()) {
@@ -181,7 +180,9 @@ const resetPassword = async (req, res) => {
     const { email, password, otp } = req.body;
 
     if (!email || !password || !otp)
-      return res.status(400).json({ message: "Email, password and OTP are required" });
+      return res
+        .status(400)
+        .json({ message: "Email, password and OTP are required" });
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -202,6 +203,47 @@ const resetPassword = async (req, res) => {
     return res.status(500).json({ message: "Error resetting password" });
   }
 };
+// logged-in user profil
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching profile", error });
+  }
+};
+// Update profile
+const updateProfile = async (req, res) => {
+  try {
+    const { bio, skills, experience, education, qualifications } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        profile: {
+          bio,
+          skills,
+          experience,
+          education,
+          qualifications,
+        },
+      },
+      { new: true }
+    ).select("-password");
+
+    res.status(200).json({
+      message: "Profile updated successfully!",
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating profile", error });
+  }
+};
 
 export {
   handleRegister,
@@ -211,4 +253,6 @@ export {
   requestotp,
   verifyOtp,
   resetPassword,
+  updateProfile,
+  getProfile,
 };
