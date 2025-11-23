@@ -13,6 +13,8 @@ import JobDetails from "./pages/JobDetails";
 import Companies from "./pages/Companies";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
+import Profile from "./pages/Profile";
+
 
 function App() {
   return (
