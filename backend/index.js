@@ -18,8 +18,7 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 // app.use(cors());
-app.use(cookieParser());
-app.use(express.json());
+
 
 const corsOptions = {
   origin: "http://localhost:5173",
@@ -27,8 +26,12 @@ const corsOptions = {
   optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
+app.use(cookieParser());
+app.use(express.json());
+
 
 app.use("/api/auth", authRoutes);
+
 
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);

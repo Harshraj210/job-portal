@@ -30,26 +30,31 @@ const getJobById = async (req, res) => {
 
 const createJob = async (req, res) => {
   try {
-    const { title, description, companyName, location, salary, jobType } =
+    const { title, description, companyName, companyLogo, location, salary, jobType } =
       req.body;
+
+    if (!title || !companyName || !location || !jobType) {
+      return res.status(400).json({ message: "Required fields missing" });
+    }
 
     const job = await Job.create({
       title,
       description,
       companyName,
-      companyLogo,
+      companyLogo: companyLogo || "",
       location,
       salary,
       jobType,
-      postedBy: req.user.id, // Link the job to the logged-in recruiter
+      postedBy: req.user.id,
     });
+
     return res.status(201).json(job);
   } catch (error) {
-    return res
-      .status(400)
-      .json({ message: "Error creating job", error: error.message });
+    console.error(error);
+    return res.status(400).json({ message: "Error creating job", error: error.message });
   }
 };
+
 
 // Get all jobs posted by the logged-in recruiter
 const getMyJobs = async (req, res) => {
