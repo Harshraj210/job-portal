@@ -19,9 +19,7 @@ const JobApplicants = () => {
         setJobTitle(res.data[0].job?.title || "");
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to load applications"
-      );
+      toast.error(error.response?.data?.message || "Failed to load applications");
     } finally {
       setLoading(false);
     }
@@ -29,7 +27,6 @@ const JobApplicants = () => {
 
   useEffect(() => {
     fetchApplications();
-    
   }, [jobId]);
 
   const handleStatusChange = async (appId, status) => {
@@ -38,15 +35,12 @@ const JobApplicants = () => {
       await api.put(`/applications/${appId}/status`, { status });
 
       setApplications((prev) =>
-        prev.map((app) =>
-          app._id === appId ? { ...app, status } : app
-        )
+        prev.map((app) => (app._id === appId ? { ...app, status } : app))
       );
+
       toast.success("Application status updated");
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to update status"
-      );
+      toast.error(error.response?.data?.message || "Failed to update status");
     } finally {
       setUpdatingId(null);
     }
@@ -54,15 +48,16 @@ const JobApplicants = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-purple-100">
+      <div className="min-h-screen w-full flex justify-center items-center bg-gradient-to-br from-purple-50 via-white to-purple-100">
         <Loader2 className="w-8 h-8 animate-spin text-[#7315c7]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100 py-10 px-4">
+    <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 via-white to-purple-100 py-10">
       <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
+
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -118,9 +113,7 @@ const JobApplicants = () => {
                   <select
                     value={app.status}
                     disabled={updatingId === app._id}
-                    onChange={(e) =>
-                      handleStatusChange(app._id, e.target.value)
-                    }
+                    onChange={(e) => handleStatusChange(app._id, e.target.value)}
                     className="border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-[#7315c7]"
                   >
                     <option value="pending">Pending</option>
