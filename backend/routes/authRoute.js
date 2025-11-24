@@ -22,7 +22,7 @@ router.post("/send-email", async (req, res) => {
 router.post("/request-otp", requestotp);
 router.post("/verify-otp", verifyOtp);
 router.post("/reset-password", resetPassword);
-router.get("/profile", protect, getProfile);
-router.put("/profile", protect, updateProfile);
+router.get("/profile", protectRoute, getProfile);
+router.put("/profile", protectRoute, updateProfile);
 
 export default router;

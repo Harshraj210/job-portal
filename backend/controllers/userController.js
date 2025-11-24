@@ -13,44 +13,39 @@ const generateToken = (id, role) => {
     expiresIn: "30d",
   });
 };
+;
+
+
 
 const handleRegister = async (req, res) => {
   try {
     let { name, email, password, role, phoneNumber } = req.body;
-    name = (name || "").trim();
-    email = (email || "").trim().toLowerCase();
-    phoneNumber = (phoneNumber || "").trim();
-
-    if (!name || !email || !password || !role || !phoneNumber) {
-      return res.status(400).json({ message: "Please fill all details" });
-    }
 
     const userexist = await User.findOne({ $or: [{ email }, { phoneNumber }] });
-    if (userexist) {
-      console.log("User Exist", userexist);
 
-      if (userexist.email === email) {
-        return res
-          .status(409)
-          .json({ message: "User name with this email already exists" });
-      }
-      if (userexist.phoneNumber === phoneNumber) {
-        return res
-          .status(409)
-          .json({ message: "User name with this phone number already exists" });
-      }
+    if (userexist) {
+      if (userexist.email === email)
+        return res.status(409).json({ message: "Email already exists" });
+
+      if (userexist.phoneNumber === phoneNumber)
+        return res.status(409).json({ message: "Phone number already exists" });
     }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      role,
-      phoneNumber,
-      profilePicture: req.file?.path || null,
+      name, email, password: hashedPassword, role, phoneNumber
     });
+
+    const token = generateToken(newUser._id, newUser.role);
+
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
     return res.status(201).json({
       message: "User Registered Successfully",
       user: {
@@ -59,9 +54,8 @@ const handleRegister = async (req, res) => {
         email: newUser.email,
         role: newUser.role,
         phoneNumber: newUser.phoneNumber,
-        profilePicture: newUser.profilePicture,
       },
-      token: generateToken(newUser._id, newUser.role),
+      token,
     });
   } catch (error) {
     return res
@@ -69,6 +63,8 @@ const handleRegister = async (req, res) => {
       .json({ message: "Error in registering User", error });
   }
 };
+
+
 
 const handleLogin = async (req, res) => {
   try {
@@ -81,12 +77,24 @@ const handleLogin = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "Usernot Found!!" });
+      return res.status(400).json({ message: "User not found!!" });
     }
-    const safePassword = await bcrypt.compare(password, user.password);
-    if (!safePassword) {
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Invalid Password!!" });
     }
+
+    // Generate JWT token
+    const token = generateToken(user._id, user.role);
+
+    // Store JWT token inside HTTP-Only cookie
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
 
     return res.status(200).json({
       message: "Login successful",
@@ -98,12 +106,16 @@ const handleLogin = async (req, res) => {
         phoneNumber: user.phoneNumber,
         profilePicture: user.profilePicture,
       },
-      token: generateToken(user._id, user.role),
+      token,
     });
+
   } catch (error) {
-    return res.status(401).json({ message: "Login failed!!" });
+    console.error(error);
+    return res.status(500).json({ message: "Login failed!!" });
   }
 };
+
+
 
 const logOut = (req, res) => {
   if (!req.user) {
@@ -207,43 +219,41 @@ const resetPassword = async (req, res) => {
 const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: "Error fetching profile", error });
   }
 };
+
 // Update profile
 const updateProfile = async (req, res) => {
   try {
-    const { bio, skills, experience, education, qualifications } = req.body;
+    const { bio, experience, education, qualifications, skills } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
       {
-        profile: {
-          bio,
-          skills,
-          experience,
-          education,
-          qualifications,
-        },
+        bio: bio || "",
+        experience: experience || "",
+        education: education || "",
+        qualifications: qualifications || "",
+        skills: skills || []
       },
-      { new: true }
+      { new: true, runValidators: true }
     ).select("-password");
 
     res.status(200).json({
-      message: "Profile updated successfully!",
+      message: "Profile updated successfully",
       user: updatedUser,
     });
   } catch (error) {
     res.status(500).json({ message: "Error updating profile", error });
   }
 };
+
+
 
 export {
   handleRegister,
