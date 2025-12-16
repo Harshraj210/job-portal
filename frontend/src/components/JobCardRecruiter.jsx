@@ -1,24 +1,9 @@
 import { Link } from "react-router-dom";
-import { Bookmark, BookmarkCheck } from "lucide-react";
+
 import api from "../lib/axios";
 import toast from "react-hot-toast";
-import { useAuth } from "../context/AuthContext";
-const { user } = useAuth();
-const [saved, setSaved] = useState(false);
-const toggleSave = async () => {
-  try {
-    if (saved) {
-      await api.delete(`/jobs/${job._id}/unsave`);
-      toast.success("Removed from saved");
-    } else {
-      await api.post(`/jobs/${job._id}/save`);
-      toast.success("Job saved");
-    }
-    setSaved(!saved);
-  } catch {
-    toast.error("Action failed");
-  }
-};
+
+
 
 const JobCardRecruiter = ({ job }) => {
   const deleteJob = async () => {
