@@ -1,5 +1,15 @@
-const JobDetails = () => {
-  return <h1 className="text-center mt-20 text-3xl">Job Details Coming Soon</h1>;
-};
+import { useAuth } from "../context/AuthContext";
+import api from "../lib/axios";
+import toast from "react-hot-toast";
 
-export default JobDetails;
+const JobDetails = () => {
+  const { user } = useAuth();
+
+  const toggleSave = async () => {
+    try {
+      await api.post(`/jobs/${job._id}/save`);
+      toast.success("Job saved!");
+    } catch {
+      toast.error("Failed to save job");
+    }
+  };
