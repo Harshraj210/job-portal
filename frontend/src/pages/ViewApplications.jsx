@@ -47,7 +47,7 @@ const ViewApplications = () => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 px-6 py-20 flex justify-center">
+    <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8">
        <div className="w-full max-w-3xl bg-white p-8 rounded-xl shadow-md">
       <h1 className="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-2">
         <UsersRound className="w-7 h-7 text-[#7315c7]" />

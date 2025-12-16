@@ -42,7 +42,7 @@ const ManageJobs = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-10">
+    <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8 bg-gray-50 py-10">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Manage My Jobs</h1>
 
       {jobs.length === 0 ? (
