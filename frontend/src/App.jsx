@@ -18,6 +18,7 @@ import ManageJobs from "./pages/ManageJobs";
 import JobApplicants from "./pages/JobApplicants";
 import ViewApplications from "./pages/ViewApplications";
 import SavedJobs from "./pages/SavedJobs";
+import EditJob from "./pages/EditJob";
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
           <Route path="/saved-jobs" element={<SavedJobs />} />
+          <Route path="/edit-job/:id" element={<EditJob />} />
+
 
           {/* Companies */}
           <Route path="/companies" element={<Companies />} />

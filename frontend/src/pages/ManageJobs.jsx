@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import api from "../lib/axios";
 import toast from "react-hot-toast";
 import { Edit, Trash2, Loader2, Briefcase } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ManageJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchJobs = async () => {
     try {
@@ -24,15 +26,40 @@ const ManageJobs = () => {
   }, []);
 
   const deleteJob = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this job?")) return;
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-3">
+          <p className="font-medium">
+            Are you sure you want to delete this job?
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={async () => {
+                try {
+                  await api.delete(`/jobs/${id}/delete`);
+                  setJobs((prev) => prev.filter((job) => job._id !== id));
+                  toast.success("Job deleted successfully!");
+                } catch {
+                  toast.error("Failed to delete job");
+                }
+                toast.dismiss(t.id);
+              }}
+              className="bg-red-500 text-white px-3 py-1 rounded"
+            >
+              Delete
+            </button>
 
-    try {
-      await api.delete(`/jobs/${id}/delete`);
-      setJobs(jobs.filter((job) => job._id !== id));
-      toast.success("Job deleted successfully!");
-    } catch {
-      toast.error("Failed to delete job");
-    }
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="bg-gray-200 px-3 py-1 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      { duration: 5000 }
+    );
   };
 
   if (loading)
@@ -69,9 +96,7 @@ const ManageJobs = () => {
               <div className="flex items-center gap-3">
                 {/* Edit */}
                 <button
-                  onClick={() =>
-                    (window.location.href = `/edit-job/${job._id}`)
-                  }
+                  onClick={() => navigate(`/edit-job/${job._id}`)}
                   className="text-blue-600 hover:text-blue-800"
                 >
                   <Edit />
