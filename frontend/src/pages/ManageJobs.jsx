@@ -10,6 +10,7 @@ const ManageJobs = () => {
   const fetchJobs = async () => {
     try {
       const res = await api.get("/jobs/myjobs");
+      console.log("My jobs:", res.data);
       setJobs(res.data);
     } catch {
       toast.error("Failed to load jobs!");
@@ -42,13 +43,11 @@ const ManageJobs = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-10">
+    <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8 bg-gray-50 py-10">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Manage My Jobs</h1>
 
       {jobs.length === 0 ? (
-        <p className="text-gray-500 text-center mt-10">
-          No job postings yet.
-        </p>
+        <p className="text-gray-500 text-center mt-10">No job postings yet.</p>
       ) : (
         <div className="grid gap-6">
           {jobs.map((job) => (
@@ -70,7 +69,9 @@ const ManageJobs = () => {
               <div className="flex items-center gap-3">
                 {/* Edit */}
                 <button
-                  onClick={() => (window.location.href = `/edit-job/${job._id}`)}
+                  onClick={() =>
+                    (window.location.href = `/edit-job/${job._id}`)
+                  }
                   className="text-blue-600 hover:text-blue-800"
                 >
                   <Edit />
