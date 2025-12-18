@@ -1,40 +1,34 @@
-import { Bookmark, BookmarkCheck } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useParams } from "react-router-dom";
 import api from "../lib/axios";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import JobCard from "../components/JobCard";
 
-const JobCard = ({ job }) => {
-  const { user } = useAuth();
-  const [saved, setSaved] = useState(false);
+const JobDetails = () => {
+  const { id } = useParams();
+  const [job, setJob] = useState(null);
 
-  const toggleSave = async () => {
-    try {
-      if (saved) {
-        await api.delete(`/jobs/${job._id}/unsave`);
-        toast.success("Removed from saved jobs");
-      } else {
-        await api.post(`/jobs/${job._id}/save`);
-        toast.success("Job saved");
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const res = await api.get(`/jobs/${id}`);
+        setJob(res.data);
+      } catch {
+        toast.error("Failed to load job details");
       }
-      setSaved(!saved);
-    } catch {
-      toast.error("Action failed");
-    }
-  };
+    };
+    fetchJob();
+  }, [id]);
+
+  if (!job) {
+    return <p className="text-center mt-10">Loading...</p>;
+  }
 
   return (
-    <div className="job-card">
-      {/* job details */}
-
-      {user?.role === "applicant" && (
-        <button
-          onClick={toggleSave}
-          className="flex items-center gap-2 border px-4 py-2 rounded-lg text-[#7315c7]"
-        >
-          {saved ? <BookmarkCheck /> : <Bookmark />}
-          {saved ? "Saved" : "Save Job"}
-        </button>
-      )}
+    <div className="max-w-4xl mx-auto mt-10">
+      <JobCard job={job} />
     </div>
   );
 };
+
+export default JobDetails;  

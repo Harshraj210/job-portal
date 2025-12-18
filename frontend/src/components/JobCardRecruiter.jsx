@@ -1,13 +1,10 @@
 import { Link } from "react-router-dom";
-
 import api from "../lib/axios";
 import toast from "react-hot-toast";
 
-
-
 const JobCardRecruiter = ({ job }) => {
   const deleteJob = async () => {
-    await api.delete(`/jobs/${job._id}`);
+    await api.delete(`/jobs/${job._id}/delete`);
     toast.success("Job Deleted!");
     window.location.reload();
   };
@@ -18,6 +15,7 @@ const JobCardRecruiter = ({ job }) => {
         <h2 className="font-bold text-lg">{job.title}</h2>
         <p className="text-sm text-gray-500">{job.location}</p>
       </div>
+
       <div className="flex gap-2">
         <Link
           to={`/edit-job/${job._id}`}
@@ -27,7 +25,7 @@ const JobCardRecruiter = ({ job }) => {
         </Link>
 
         <Link
-          to={`/applications/${job._id}`}
+          to={`/job-applicants/${job._id}`}
           className="px-3 py-2 bg-green-500 text-white rounded-lg"
         >
           Applicants

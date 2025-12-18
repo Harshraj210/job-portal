@@ -35,7 +35,7 @@ const PostJob = () => {
     setIsLoading(true);
 
     try {
-      await api.post("/jobs", formData); // Backend protected route
+      await api.post("/jobs/create", formData); // Backend protected route
 
       toast.success("Job posted successfully! 🎉");
       navigate("/recruiter-dashboard");
