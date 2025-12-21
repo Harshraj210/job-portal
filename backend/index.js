@@ -3,8 +3,10 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors"; // security purpose
 import mongoose from "mongoose";
-import applicationRoutes from "./routes/applicationRoute.js"
 
+
+import applicationRoutes from "./routes/applicationRoute.js";
+import companyRoutes from "./routes/CompanyRoute.js";
 import authRoutes from "./routes/authRoute.js";
 import jobRoutes from "./routes/jobRoute.js";
 import connectDB from "./Database/db.js";
@@ -31,6 +33,7 @@ app.use(express.json());
 
 
 app.use("/api/auth", authRoutes);
+app.use("/api/company", companyRoutes);
 
 
 app.use("/api/jobs", jobRoutes);

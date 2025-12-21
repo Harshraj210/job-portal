@@ -9,6 +9,7 @@ const router = express.Router();
 router.post("/register",handleRegister)
 router.post("/login",handleLogin)
 router.post("/logout",protectRoute,logOut);
+router.post("/profile/update",protectRoute,updateProfile);
 router.post("/forgot-password", forgotPassword);
 router.post("/send-email", async (req, res) => {
   const { to, subject, text } = req.body;
