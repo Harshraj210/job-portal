@@ -15,6 +15,10 @@ import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Profile from "./pages/Profile";
 import ManageJobs from "./pages/ManageJobs";
+import JobApplicants from "./pages/JobApplicants";
+import ViewApplications from "./pages/ViewApplications";
+import SavedJobs from "./pages/SavedJobs";
+import EditJob from "./pages/EditJob";
 
 function App() {
   return (
@@ -24,7 +28,7 @@ function App() {
       <Navbar />
 
       {/* Main Content */}
-      <main className="flex-grow">
+      <main className="flex-grow w-full max-w-7xl mx-auto px-4">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -36,6 +40,9 @@ function App() {
           {/* Jobs */}
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
+          <Route path="/saved-jobs" element={<SavedJobs />} />
+          <Route path="/edit-job/:id" element={<EditJob />} />
+
 
           {/* Companies */}
           <Route path="/companies" element={<Companies />} />
@@ -47,6 +54,11 @@ function App() {
           <Route
             path="/recruiter-dashboard/manage-jobs"
             element={<ManageJobs />}
+          />
+          <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
+          <Route
+            path="/recruiter-dashboard/applications"
+            element={<ViewApplications />}
           />
 
           {/* 404 Page */}

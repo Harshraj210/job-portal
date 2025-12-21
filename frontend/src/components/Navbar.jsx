@@ -43,7 +43,10 @@ const Navbar = () => {
       links: [
         ...(user.role === "recruiter"
           ? [{ label: "Recruiter Dashboard", href: "/recruiter-dashboard" }]
-          : [{ label: "My Applications", href: "/applications" }]),
+          : [
+              { label: "My Applications", href: "/applications" },
+              { label: "Saved Jobs", href: "/saved-jobs" },
+            ]),
       ],
     });
   } else {
@@ -170,6 +173,15 @@ const Navbar = () => {
                   >
                     My Profile
                   </Link>
+                  {user.role === "applicant" && (
+                    <Link
+                      to="/saved-jobs"
+                      className="text-sm text-[#7315c7] font-semibold hover:underline"
+                    >
+                      Saved Jobs
+                    </Link>
+                  )}
+
                   {user.role === "recruiter" && (
                     <Link
                       to="/recruiter-dashboard"
