@@ -13,13 +13,12 @@ const generateToken = (id, role) => {
     expiresIn: "30d",
   });
 };
-;
-
-
-
 const handleRegister = async (req, res) => {
   try {
-    let { name, email, password, role, phoneNumber } = req.body;
+    const { name, email, password, role, phoneNumber } = req.body;
+    if (!name || !email || !password || !role || !phoneNumber) {
+      return res.status(400).json({ message: "Please fill all details" });
+    }
 
     const userexist = await User.findOne({ $or: [{ email }, { phoneNumber }] });
 
@@ -34,16 +33,11 @@ const handleRegister = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
-      name, email, password: hashedPassword, role, phoneNumber
-    });
-
-    const token = generateToken(newUser._id, newUser.role);
-
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 30 * 24 * 60 * 60 * 1000,
+      name,
+      email,
+      password: hashedPassword,
+      role,
+      phoneNumber,
     });
 
     return res.status(201).json({
@@ -64,14 +58,12 @@ const handleRegister = async (req, res) => {
   }
 };
 
-
-
 const handleLogin = async (req, res) => {
   try {
-    let { email, password } = req.body;
+    let { email, password, role } = req.body;
     email = (email || "").trim().toLowerCase();
 
-    if (!email || !password) {
+    if (!email || !password || !role) {
       return res.status(400).json({ message: "Please fill all details!!" });
     }
 
@@ -85,37 +77,43 @@ const handleLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid Password!!" });
     }
 
-    // Generate JWT token
-    const token = generateToken(user._id, user.role);
+    if (user.role !== role) {
+      return res.status(403).json({ message: "Unauthorized role access!!" });
+    }
+
+    const tokenData = {
+      userId: user._id,
+      role: user.role,
+    };
+
+    const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
+      expiresIn: "1d",
+    });
 
     // Store JWT token inside HTTP-Only cookie
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
-
-    return res.status(200).json({
-      message: "Login successful",
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phoneNumber: user.phoneNumber,
-        profilePicture: user.profilePicture,
-      },
-      token,
-    });
-
+    return res
+      .status(200)
+      .cookie("jwt", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+      })
+      .json({
+        message: `Welcome back ${user.name}!!`,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          phoneNumber: user.phoneNumber,
+          profilePicture: user.profilePicture,
+        },
+      });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Login failed!!" });
   }
 };
-
-
 
 const logOut = (req, res) => {
   if (!req.user) {
@@ -230,19 +228,52 @@ const getProfile = async (req, res) => {
 // Update profile
 const updateProfile = async (req, res) => {
   try {
-    const { bio, experience, education, qualifications, skills } = req.body;
+    const {
+      name,
+      email,
+      phoneNumber,
+      bio,
+      experience,
+      education,
+      qualifications,
+      skills,
+    } = req.body;
 
+    if (
+      !name ||
+      !email ||
+      !phoneNumber ||
+      !bio ||
+      !experience ||
+      !education ||
+      !qualifications ||
+      !skills
+    ) {
+      return res.status(400).json({ message: "Please fill all details" });
+    }
+    const userId = req.user._id;
     const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
+      userId,
       {
-        bio: bio || "",
-        experience: experience || "",
-        education: education || "",
-        qualifications: qualifications || "",
-        skills: skills || []
+        name,
+        email,
+        phoneNumber,
+        bio,
+        experience,
+        education,
+        qualifications,
+        skills,
       },
-      { new: true, runValidators: true }
-    ).select("-password");
+      { new: true }
+    );
+
+    res.json({
+      id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      phoneNumber: updatedUser.phoneNumber,
+    });
 
     res.status(200).json({
       message: "Profile updated successfully",
@@ -252,8 +283,6 @@ const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Error updating profile", error });
   }
 };
-
-
 
 export {
   handleRegister,
