@@ -8,7 +8,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "applicant",
+    
   });
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
