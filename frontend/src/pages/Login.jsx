@@ -8,7 +8,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role:"",
+    role: "applicant",
   });
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
@@ -70,23 +70,19 @@ const Login = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-700 ml-1">Role</label>
-            <div className="relative group">
-              <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-[#7315c7] transition-colors" />
-              <input
-                type="text"
-                name="role"
-                required
-                placeholder="Enter your role"
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm text-gray-900"
-                value={formData.role}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="flex justify-end">
-              <button type="button" className="text-xs text-[#7315c7] hover:text-[#9324bc] hover:underline font-medium">
-              </button>
-            </div>
+            <label className="text-xs font-medium text-gray-700 ml-1">
+              Login As
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm text-gray-900"
+              required
+            >
+              <option value="applicant">Applicant</option>
+              <option value="recruiter">Recruiter</option>
+            </select>
           </div>
 
           {/* Password Field */}
@@ -115,23 +111,6 @@ const Login = () => {
               </button>
             </div>
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-700 ml-1">
-              Login As
-            </label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm text-gray-900"
-              required
-            >
-              <option value="applicant">Applicant</option>
-              <option value="recruiter">Recruiter</option>
-            </select>
-          </div>
-
-
 
           {/* Submit Button */}
           <button
