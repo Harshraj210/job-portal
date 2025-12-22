@@ -129,7 +129,7 @@ const Login = () => {
 
           {/* Link to Register */}
           <div className="text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-600">
               New to JobPortal?{" "}
               <Link
                 to="/register"
