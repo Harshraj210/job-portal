@@ -67,7 +67,7 @@ const createJob = async (req, res) => {
         name: item.user.name,
         intro: `Great news! ${companyName} just posted a new position: ${title}.`,
         outro:
-          "You are receiving this because you added this company to your wishlist.",
+          "You are receiving this because you added this Company to your wishlist.",
       });
     });
 
