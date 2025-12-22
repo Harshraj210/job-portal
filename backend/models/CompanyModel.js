@@ -6,10 +6,10 @@ const companySchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  userId:{
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: false,
+    ref: "User",
+    required: true,
   },
   logo: {
     type: String,

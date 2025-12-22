@@ -49,7 +49,7 @@ const handleRegister = async (req, res) => {
         role: newUser.role,
         phoneNumber: newUser.phoneNumber,
       },
-      token,
+      token: generateToken(newUser._id, newUser.role),
     });
   } catch (error) {
     return res
