@@ -2,6 +2,9 @@ import Company from "../models/CompanyModel.js";
 
 const registerCompany = async (req, res) => {
   try {
+    if(req.user.role !== "recruiter"){
+      return  res.status(403).json({ message: "Access Denied: Only recruiters can register a company" });
+    }
     const { companyName } = req.body;
 
     if (!companyName) {
@@ -14,6 +17,7 @@ const registerCompany = async (req, res) => {
 
     const newCompany = await Company.create({
       name: companyName,
+      userId: req.user._id,
     });
 
     return res
@@ -26,7 +30,7 @@ const registerCompany = async (req, res) => {
 
 const getCompany = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const companies = await Company.find({ userId });
     if (!companies) {
       return res.status(404).json({ message: "No companies found" });

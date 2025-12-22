@@ -3,25 +3,24 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const protectRoute = (req, res, next) => {
-  const authheader = req.headers.authorization;
-  if (!authheader) return res.status(401).json({ message: "No token" });
-
-  const token = authheader.split(" ")[1];
-  if (!token)
-     return res.
-    status(401)
-    .json({ message: "Token missing" });
-
+const protectRoute = (req, res, next) => {
   try {
-    req.user = jwt.verify(token, process.env.SECRET_KEY);
+    const token = req.cookies.jwt;
+    if (!token) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    const decode = jwt.verify(token, process.env.SECRET_KEY);
+    if (!decode) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+    req.user = { _id: decode.userId, role: decode.role };
     next();
-  } catch {
-    res.status(401).json({ message: "Invalid token" });
+  } catch (error) {
+    return res.status(401).json({ message: "Authentication failed" });
   }
 };
 
-export const isRecruiter = (req, res, next) => {
+const isRecruiter = (req, res, next) => {
   if (req.user && req.user.role === "recruiter") {
     next();
   } else {
@@ -29,10 +28,12 @@ export const isRecruiter = (req, res, next) => {
   }
 };
 // Checks if you're an applicant
-export const isApplicant = (req, res, next) => {
-  if (req.user && req.user.role === 'applicant') {
+const isApplicant = (req, res, next) => {
+  if (req.user && req.user.role === "applicant") {
     next();
   } else {
-    return res.status(403).json({ message: 'Forbidden: Not an applicant' });
+    return res.status(403).json({ message: "Forbidden: Not an applicant" });
   }
 };
+
+export { protectRoute, isRecruiter, isApplicant };

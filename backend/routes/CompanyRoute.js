@@ -6,7 +6,7 @@ import { registerCompany, getCompany, getCompanyById, updateCompany } from "../c
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-router.post("/register", registerCompany);
+router.post("/register", protectRoute, registerCompany);
 router.get("/get", getCompany);
 router.get("/get/:id", getCompanyById);
 router.put("/update/:id", updateCompany);
