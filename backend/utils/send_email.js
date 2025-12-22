@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const sendEmail = async ({ to, subject, text }) => {
+const sendEmail = async ({ to, subject, text, intro, outro }) => {
   const transporter = nodemailer.createTransport({
     host: process.env.MAIL_SMTP_HOST,
     port: Number(process.env.MAIL_SMTP_PORT),
@@ -25,8 +25,8 @@ const sendEmail = async ({ to, subject, text }) => {
   const emailBody = {
     body: {
       name: "User",
-      intro: text,
-      outro: "If you did not request this, ignore the email.",
+      intro: intro || text,
+      outro: outro || "If you did not request this, ignore the email.",
     },
   };
 
