@@ -1,5 +1,7 @@
 import User from "../models/userModel.js";
 import Job from "../models/jobModel.js";
+import Wishlist from "../models/WishlistModel.js";
+import sendEmail from "../utils/send_email.js";
 
 // public routes for appicants
 
@@ -14,9 +16,7 @@ const getallJobs = async (req, res) => {
 
 const getJobById = async (req, res) => {
   try {
-    const job = await Job.findById(req.params.id).populate(
-      "companyName"
-    );
+    const job = await Job.findById(req.params.id).populate("companyName");
     if (!job) {
       return res.status(404).json({ message: "Job not found buddy !!" });
     }
@@ -30,8 +30,15 @@ const getJobById = async (req, res) => {
 
 const createJob = async (req, res) => {
   try {
-    const { title, description, companyName, companyLogo, location, salary, jobType } =
-      req.body;
+    const {
+      title,
+      description,
+      companyName,
+      companyLogo,
+      location,
+      salary,
+      jobType,
+    } = req.body;
 
     if (!title || !companyName || !location || !jobType) {
       return res.status(400).json({ message: "Required fields missing" });
@@ -46,15 +53,32 @@ const createJob = async (req, res) => {
       salary,
       jobType,
       postedBy: req.user.id,
+      company: req.user.companyId,
+    });
+
+    const followers = await Wishlist.find({
+      Company: req.user.companyId,
+    }).populate("user");
+
+    followers.forEach((item) => {
+      sendEmail({
+        to: item.user.email,
+        subject: `New Job Opening at ${companyName}`,
+        name: item.user.name,
+        intro: `Great news! ${companyName} just posted a new position: ${title}.`,
+        outro:
+          "You are receiving this because you added this company to your wishlist.",
+      });
     });
 
     return res.status(201).json(job);
   } catch (error) {
     console.error(error);
-    return res.status(400).json({ message: "Error creating job", error: error.message });
+    return res
+      .status(400)
+      .json({ message: "Error creating job", error: error.message });
   }
 };
-
 
 // Get all jobs posted by the logged-in recruiter
 const getMyJobs = async (req, res) => {
@@ -197,9 +221,9 @@ const unsaveJob = async (req, res) => {
 const getSavedJobs = async (req, res) => {
   try {
     const userId = req.user.id;
-    
-    const user = await User.findById(userId).populate('savedJobs');
-    
+
+    const user = await User.findById(userId).populate("savedJobs");
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -211,4 +235,16 @@ const getSavedJobs = async (req, res) => {
       .json({ message: "Server error", error: error.message });
   }
 };
-export { getallJobs, getJobById, createJob, getMyJobs, updateJob, deleteJob, filterJobs,searchJobs,saveJob,unsaveJob,getSavedJobs };
+export {
+  getallJobs,
+  getJobById,
+  createJob,
+  getMyJobs,
+  updateJob,
+  deleteJob,
+  filterJobs,
+  searchJobs,
+  saveJob,
+  unsaveJob,
+  getSavedJobs,
+};
