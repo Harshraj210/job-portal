@@ -24,7 +24,7 @@ const Login = () => {
     try {
       await login(formData.email, formData.password, formData.role);
       toast.success("Welcome back!");
-      navigate("/"); 
+      navigate("/");
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     } finally {
@@ -41,14 +41,20 @@ const Login = () => {
       {/* Main Card */}
       <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden relative z-10 border border-gray-100">
         <div className="px-8 pt-8 pb-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-          <p className="text-gray-500 text-sm">Enter your details to access your workspace.</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome Back
+          </h2>
+          <p className="text-gray-500 text-sm">
+            Enter your details to access your workspace.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-5">
           {/* Email Field */}
           <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-700 ml-1">Email Address</label>
+            <label className="text-xs font-medium text-gray-700 ml-1">
+              Email Address
+            </label>
             <div className="relative group">
               <Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-[#7315c7] transition-colors" />
               <input
@@ -85,7 +91,9 @@ const Login = () => {
 
           {/* Password Field */}
           <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-700 ml-1">Password</label>
+            <label className="text-xs font-medium text-gray-700 ml-1">
+              Password
+            </label>
             <div className="relative group">
               <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-[#7315c7] transition-colors" />
               <input
@@ -99,10 +107,28 @@ const Login = () => {
               />
             </div>
             <div className="flex justify-end">
-              <button type="button" className="text-xs text-[#7315c7] hover:text-[#9324bc] hover:underline font-medium">
+              <button
+                type="button"
+                className="text-xs text-[#7315c7] hover:text-[#9324bc] hover:underline font-medium"
+              >
                 Forgot Password?
               </button>
             </div>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700 ml-1">
+              Login As
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100 outline-none transition-all text-sm text-gray-900"
+              required
+            >
+              <option value="applicant">Applicant</option>
+              <option value="recruiter">Recruiter</option>
+            </select>
           </div>
 
 
@@ -126,7 +152,10 @@ const Login = () => {
           <div className="text-center">
             <p className="text-sm text-gray-500">
               New to JobPortal?{" "}
-              <Link to="/register" className="text-[#7315c7] font-bold hover:underline">
+              <Link
+                to="/register"
+                className="text-[#7315c7] font-bold hover:underline"
+              >
                 Sign Up
               </Link>
             </p>
