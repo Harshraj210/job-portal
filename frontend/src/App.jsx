@@ -20,6 +20,7 @@ import JobApplicants from "./pages/JobApplicants";
 import ViewApplications from "./pages/ViewApplications";
 import SavedJobs from "./pages/SavedJobs";
 import EditJob from "./pages/EditJob";
+import RecruiterGuard from "./components/RecruiterGuard";
 
 function App() {
   return (
@@ -31,8 +32,10 @@ function App() {
       {/* Main Content */}
       <main className="flex-grow w-full max-w-7xl mx-auto px-4">
         <Routes>
+          {/* Public pages */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/companies" element={<Companies />} />
 
           {/* Auth */}
           <Route path="/login" element={<Login />} />
@@ -45,25 +48,56 @@ function App() {
           <Route path="/saved-jobs" element={<SavedJobs />} />
           <Route path="/edit-job/:id" element={<EditJob />} />
 
-
-          {/* Companies */}
-          <Route path="/companies" element={<Companies />} />
-
-          {/* Recruiter */}
-          <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
-          <Route path="/recruiter-dashboard/post-job" element={<PostJob />} />
+          {/* Profile */}
           <Route path="/profile" element={<Profile />} />
+
+          {/* Recruiter (PROTECTED) */}
+          <Route
+            path="/recruiter-dashboard"
+            element={
+              <RecruiterGuard>
+                <RecruiterDashboard />
+              </RecruiterGuard>
+            }
+          />
+
+          <Route
+            path="/recruiter-dashboard/post-job"
+            element={
+              <RecruiterGuard>
+                <PostJob />
+              </RecruiterGuard>
+            }
+          />
+
           <Route
             path="/recruiter-dashboard/manage-jobs"
-            element={<ManageJobs />}
-          />
-          <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
-          <Route
-            path="/recruiter-dashboard/applications"
-            element={<ViewApplications />}
+            element={
+              <RecruiterGuard>
+                <ManageJobs />
+              </RecruiterGuard>
+            }
           />
 
-          {/* 404 Page */}
+          <Route
+            path="/recruiter-dashboard/applications"
+            element={
+              <RecruiterGuard>
+                <ViewApplications />
+              </RecruiterGuard>
+            }
+          />
+
+          <Route
+            path="/job-applicants/:jobId"
+            element={
+              <RecruiterGuard>
+                <JobApplicants />
+              </RecruiterGuard>
+            }
+          />
+
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
