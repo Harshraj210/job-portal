@@ -13,7 +13,7 @@ const RecruiterGuard = ({ children }) => {
         const res = await api.get("/company/check");
 
         if (!res.data.hasCompany) {
-          navigate("/register-company"); // 🚫 BLOCK DASHBOARD
+          navigate("/register-company");
         }
       } catch {
         navigate("/login");
@@ -24,3 +24,15 @@ const RecruiterGuard = ({ children }) => {
 
     checkCompany();
   }, [navigate]);
+   if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-[#7315c7]" />
+      </div>
+    );
+  }
+
+  return children;
+};
+
+export default RecruiterGuard;
