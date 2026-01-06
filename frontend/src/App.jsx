@@ -21,6 +21,7 @@ import ViewApplications from "./pages/ViewApplications";
 import SavedJobs from "./pages/SavedJobs";
 import EditJob from "./pages/EditJob";
 import RecruiterGuard from "./components/RecruiterGuard";
+import RegisterCompany from "./pages/RegisterCompany";
 
 function App() {
   return (
@@ -57,6 +58,14 @@ function App() {
             element={
               <RecruiterGuard>
                 <RecruiterDashboard />
+              </RecruiterGuard>
+            }
+          />
+          <Route
+            path="/register-company"
+            element={
+              <RecruiterGuard>
+                <RegisterCompany />
               </RecruiterGuard>
             }
           />
