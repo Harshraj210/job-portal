@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../lib/axios";
 import { Loader2, PlusCircle, Building2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 const RecruiterDashboard = () => {
   const { user, logout } = useAuth();
   const [hasCompany, setHasCompany] = useState(false);
   const [loading, setLoading] = useState(true);
+  const toastShownRef = useRef(false);
 
   useEffect(() => {
     const checkCompany = async () => {
@@ -24,6 +26,11 @@ const RecruiterDashboard = () => {
 
     if (user?.role === "recruiter") {
       checkCompany();
+      // Show error and disable interaction as per requirement
+      if (!toastShownRef.current) {
+        toast.error("Recruiter dashboard access is restricted");
+        toastShownRef.current = true;
+      }
     } else {
       setLoading(false);
     }
@@ -38,7 +45,7 @@ const RecruiterDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 px-6 py-20 flex justify-center">
+    <div className="min-h-screen w-full bg-gray-50 px-6 py-20 flex justify-center pointer-events-none select-none opacity-80">
       <div className="max-w-4xl w-full mx-auto bg-white p-8 rounded-xl shadow-md">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">
