@@ -4,7 +4,7 @@ import Job from "../models/jobModel.js";
 const applyForjob = async (req, res) => {
   try {
     const { jobId } = req.params;
-    const applicantId = req.user.id;
+    const applicantId = req.user._id;
 
     const job = await Job.findById(jobId);
     if (!job) {
@@ -33,7 +33,7 @@ const applyForjob = async (req, res) => {
 
 const getMyApplication = async (req, res) => {
   try {
-    const applicantId = req.user.id;
+    const applicantId = req.user._id;
 
     const applications = await Application.findOne({
       applicant: applicantId,
@@ -48,7 +48,7 @@ const getMyApplication = async (req, res) => {
 const getApplicationsForJob = async (req, res) => {
   try {
     const { jobId } = req.params;
-    const recruiterId = req.user.id;
+    const recruiterId = req.user._id;
     const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
@@ -71,7 +71,7 @@ const getApplicationsForJob = async (req, res) => {
 const updateApplicationStatus = async (req, res) => {
   try {
     const { status } = req.body; // Recruiters sends the statuses
-    const recruiterId = req.user.id;
+    const recruiterId = req.user._id;
     const { appId } = req.params;
     if (!["pending", "reviewed", "rejected"].includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });

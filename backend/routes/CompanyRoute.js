@@ -1,5 +1,5 @@
 import express from "express";
-import { protectRoute } from "../middleware/authMiddleware.js";
+import { protectRoute,isRecruiter } from "../middleware/authMiddleware.js";
 import multer from "multer";
 import { registerCompany, getCompany, getCompanyById, updateCompany , checkCompanyExists,} from "../controllers/CompanyCotroller.js";
 
