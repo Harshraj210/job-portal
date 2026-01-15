@@ -139,54 +139,57 @@ const Home = () => {
                 </div>
               </div>
             </motion.div>
-
-            {/* Right Visuals */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative hidden lg:block"
-            >
-              {/* Abstract decorative cards */}
-              <div className="relative z-10 grid grid-cols-2 gap-4">
-                 <div className="space-y-4 mt-8">
-                    <div className="bg-white p-6 rounded-2xl shadow-xl shadow-purple-100 border border-purple-50 transform hover:scale-105 transition-transform duration-300">
-                       <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4 text-blue-600">
-                         <Search className="w-5 h-5"/>
-                       </div>
-                       <h4 className="font-bold text-gray-900">Smart Search</h4>
-                       <p className="text-xs text-gray-500 mt-1">AI-powered candidate matching</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl shadow-xl shadow-purple-100 border border-purple-50 transform hover:scale-105 transition-transform duration-300">
-                       <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-4 text-green-600">
-                         <CheckCircle className="w-5 h-5"/>
-                       </div>
-                       <h4 className="font-bold text-gray-900">Verified Profiles</h4>
-                       <p className="text-xs text-gray-500 mt-1">Pre-vetted top talent</p>
-                    </div>
-                 </div>
-                 <div className="space-y-4">
-                    <div className="bg-[#7315c7] p-6 rounded-2xl shadow-2xl text-white transform translate-y-4 hover:translate-y-2 transition-transform duration-300">
-                       <h4 className="font-bold text-xl mb-2">Hiring?</h4>
-                       <p className="text-purple-100 text-sm mb-4">Post a job in minutes and reach thousands of devs.</p>
-                       <div className="h-1 w-12 bg-white/30 rounded-full"></div>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl shadow-xl shadow-purple-100 border border-purple-50 transform hover:scale-105 transition-transform duration-300">
-                       <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mb-4 text-orange-600">
-                         <Send className="w-5 h-5"/>
-                       </div>
-                       <h4 className="font-bold text-gray-900">Quick Apply</h4>
-                       <p className="text-xs text-gray-500 mt-1">Streamlined application flow</p>
-                    </div>
-                 </div>
-              </div>
-              
-              {/* Blobs */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-purple-200/20 rounded-full filter blur-3xl -z-10 animate-pulse"></div>
-            </motion.div>
-
           </div>
         </main>
+
+        {/* --- COMPANY LOGOS MARQUEE --- */}
+        <div className="py-12 bg-white border-t border-purple-50 overflow-hidden">
+          <p className="text-center text-sm font-semibold text-gray-500 mb-8 uppercase tracking-widest">
+            Trusted by Industry Leaders/ SMVIT START-UPS
+          </p>
+          <div className="relative flex overflow-x-hidden group">
+            <motion.div
+              className="flex w-max items-center"
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{
+                repeat: Infinity,
+                ease: "linear",
+                duration: 25,
+              }}
+            >
+              {/* Logos (Repeated twice for seamless loop) */}
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-16 items-center px-8 shrink-0">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
+                    alt="Google"
+                    className="h-8 md:h-10"
+                  />
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg"
+                    alt="Microsoft"
+                    className="h-8 md:h-10"
+                  />
+                  <span className="text-2xl md:text-3xl font-bold text-[#7315c7] font-sans tracking-tight cursor-default">
+                    Tvara
+                  </span>
+                  <span className="text-2xl md:text-3xl font-bold text-blue-600 font-serif italic cursor-default">
+                    Zryth Solutions
+                  </span>
+                  <span className="text-2xl md:text-3xl font-extrabold text-orange-500 font-mono tracking-tighter cursor-default">
+                    Zintlr
+                  </span>
+                  <span className="text-xl md:text-2xl font-bold text-indigo-600 font-sans tracking-widest uppercase cursor-default border-2 border-indigo-600 px-2 py-0.5">
+                    Concurrence AI
+                  </span>
+                  <span className="text-2xl md:text-3xl font-black text-red-600 font-serif tracking-tight cursor-default">
+                    Rudrax
+                  </span>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -503,6 +506,55 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* --- COMPANY LOGOS MARQUEE (Applicant View) --- */}
+      <div className="py-12 bg-white border-t border-purple-50 overflow-hidden">
+        <p className="text-center text-sm font-semibold text-gray-500 mb-8 uppercase tracking-widest">
+          Trusted by Industry Leaders / SMVIT START-UPS
+        </p>
+        <div className="relative flex overflow-x-hidden group">
+          <motion.div
+            className="flex w-max items-center"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{
+              repeat: Infinity,
+              ease: "linear",
+              duration: 25,
+            }}
+          >
+            {/* Logos (Repeated twice for seamless loop) */}
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="flex gap-16 items-center px-8 shrink-0">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
+                  alt="Google"
+                  className="h-8 md:h-10"
+                />
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg"
+                  alt="Microsoft"
+                  className="h-8 md:h-10"
+                />
+                <span className="text-2xl md:text-3xl font-bold text-[#7315c7] font-sans tracking-tight cursor-default">
+                  Tvara
+                </span>
+                <span className="text-2xl md:text-3xl font-bold text-blue-600 font-serif italic cursor-default">
+                  Zryth Solutions
+                </span>
+                <span className="text-2xl md:text-3xl font-extrabold text-orange-500 font-mono tracking-tighter cursor-default">
+                  Zintlr
+                </span>
+                <span className="text-xl md:text-2xl font-bold text-indigo-600 font-sans tracking-widest uppercase cursor-default border-2 border-indigo-600 px-2 py-0.5">
+                  Concurrence AI
+                </span>
+                <span className="text-2xl md:text-3xl font-black text-red-600 font-serif tracking-tight cursor-default">
+                  Rudrax
+                </span>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 };

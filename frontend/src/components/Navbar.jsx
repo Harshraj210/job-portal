@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { Menu, X, User, LogOut, Briefcase } from "lucide-react";
 import { gsap } from "gsap";
 import { GoArrowUpRight } from "react-icons/go";
+import NotificationDropdown from "./NotificationDropdown";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -161,6 +162,9 @@ const Navbar = () => {
 
               {user ? (
                 <div className="flex items-center gap-4 pl-4 border-l border-gray-200">
+                  {/* Notification Dropdown */}
+                  <NotificationDropdown />
+                  
                   <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
                     <div className="w-8 h-8 bg-purple-50 rounded-full flex items-center justify-center text-[#7315c7]">
                       <User className="w-4 h-4" />
