@@ -33,14 +33,20 @@ const JobCard = ({ job }) => {
     }
   };
   
-  const handleApply = (e) => {
+  const handleApply = async (e) => {
       e.stopPropagation();
       e.preventDefault();
       if (!user) {
           navigate("/login");
-      } else {
-          // Navigate to details to apply or show modal
-           navigate(`/jobs/${job._id}`);
+          return;
+      }
+      
+      try {
+        await api.post(`/applications/${job._id}`);
+        toast.success("Application submitted successfully!");
+        // Optional: Trigger a refresh or local state update
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Application failed");
       }
   }
 
