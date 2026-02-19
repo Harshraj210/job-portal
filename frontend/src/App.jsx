@@ -23,6 +23,7 @@ import EditJob from "./pages/EditJob";
 import RecruiterGuard from "./components/RecruiterGuard";
 import RegisterCompany from "./pages/RegisterCompany";
 import MyApplications from "./pages/MyApplications";
+import Notifications from "./pages/Notifications";
 
 function App() {
   return (
@@ -51,8 +52,10 @@ function App() {
           <Route path="/applications" element={<MyApplications />} />
           <Route path="/edit-job/:id" element={<EditJob />} />
 
+
           {/* Profile */}
           <Route path="/profile" element={<Profile />} />
+          <Route path="/notifications" element={<Notifications />} />
 
           {/* Recruiter (PROTECTED) */}
           <Route

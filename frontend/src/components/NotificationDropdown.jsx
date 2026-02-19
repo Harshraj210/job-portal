@@ -2,13 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import api from "../lib/axios";
 import { formatDistanceToNow } from "date-fns";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
+
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const fetchNotifications = async () => {
     try {
@@ -57,8 +61,33 @@ const NotificationDropdown = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+
+
+  const handleNotificationClick = async (notification) => {
+      if (!notification.isRead) {
+          await markAsRead(notification._id);
+      }
+      setIsOpen(false);
+       
+      // Navigate based on type
+      if (notification.type === "application" && notification.relatedJob) {
+         if (user.role === 'recruiter') {
+             // relatedJob might be populated or just ID. 
+             // notificationController.js getUserNotifications populates 'relatedJob' with title/company.
+             const jobId = notification.relatedJob._id || notification.relatedJob;
+             navigate(`/job-applicants/${jobId}`);
+         }
+      }
+      if (notification.type === "status-update") {
+          navigate("/applications");
+      }
+  };
+
+  // ... (keep markAsRead and handleToggle and clickOutside)
+
   return (
     <div className="relative" ref={dropdownRef}>
+      {/* ... (keep button) */}
       <button
         onClick={handleToggle}
         className="relative p-2 text-gray-600 hover:text-[#7315c7] transition-colors rounded-full hover:bg-purple-50"
@@ -73,9 +102,12 @@ const NotificationDropdown = () => {
         <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
           <div className="p-4 border-b bg-gray-50 flex justify-between items-center">
             <h3 className="font-semibold text-gray-700">Notifications</h3>
-            {unreadCount > 0 && (
-                <span className="text-xs bg-[#7315c7] text-white px-2 py-0.5 rounded-full">{unreadCount} new</span>
-            )}
+            <div className="flex items-center gap-2">
+                 {unreadCount > 0 && (
+                    <span className="text-xs bg-[#7315c7] text-white px-2 py-0.5 rounded-full">{unreadCount} new</span>
+                 )}
+                 <Link to="/notifications" onClick={() => setIsOpen(false)} className="text-xs text-[#7315c7] hover:underline">View all</Link>
+            </div>
           </div>
           
           <div className="max-h-96 overflow-y-auto">
@@ -88,7 +120,7 @@ const NotificationDropdown = () => {
                 {notifications.map((notification) => (
                   <div
                     key={notification._id}
-                    onClick={() => !notification.isRead && markAsRead(notification._id)}
+                    onClick={() => handleNotificationClick(notification)}
                     className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
                       !notification.isRead ? "bg-purple-50/50" : ""
                     }`}
@@ -111,3 +143,5 @@ const NotificationDropdown = () => {
 };
 
 export default NotificationDropdown;
+
+
