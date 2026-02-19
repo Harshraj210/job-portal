@@ -42,24 +42,33 @@ const MyApplications = () => {
               <table className="w-full text-left">
                   <thead className="bg-gray-50 border-b">
                       <tr>
-                          <th className="p-4 font-semibold text-gray-600">Job Title</th>
-                          <th className="p-4 font-semibold text-gray-600">Company</th>
+                          <th className="p-4 font-semibold text-gray-600 w-1/3">Job & Company</th>
                           <th className="p-4 font-semibold text-gray-600">Applied On</th>
-                          <th className="p-4 font-semibold text-gray-600">Status</th>
+                          <th className="p-4 font-semibold text-gray-600">Status & Messages</th>
                       </tr>
                   </thead>
                   <tbody className="divide-y">
                       {applications.map((app) => (
-                          <tr key={app._id} className="hover:bg-gray-50">
-                              <td className="p-4 font-medium">{app.job?.title}</td>
-                              <td className="p-4 text-gray-600">{app.job?.companyName}</td>
-                              <td className="p-4 text-gray-500 text-sm">
+                          <tr key={app._id} className="hover:bg-gray-50 transition-colors group">
+                              <td className="p-4 align-top">
+                                  <div className="font-medium text-gray-900">{app.job?.title}</div>
+                                  <div className="text-sm text-gray-500">{app.job?.companyName}</div>
+                              </td>
+                              <td className="p-4 align-top text-gray-500 text-sm">
                                   {formatDistanceToNow(new Date(app.createdAt), { addSuffix: true })}
                               </td>
-                              <td className="p-4">
-                                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(app.status)} capitalize`}>
-                                      {app.status}
-                                  </span>
+                              <td className="p-4 align-top">
+                                  <div className="flex flex-col gap-2">
+                                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold w-fit ${getStatusColor(app.status)} capitalize`}>
+                                        {app.status}
+                                    </span>
+                                    {app.recruiterMessage && (
+                                        <div className="bg-purple-50 border border-purple-100 rounded-lg p-3 text-sm text-gray-700 mt-1">
+                                            <span className="font-semibold text-[#7315c7] block text-xs mb-1">Message from Recruiter:</span>
+                                            {app.recruiterMessage}
+                                        </div>
+                                    )}
+                                  </div>
                               </td>
                           </tr>
                       ))}

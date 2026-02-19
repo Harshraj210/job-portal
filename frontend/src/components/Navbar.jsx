@@ -125,10 +125,10 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
               >
                 <div className="w-8 h-8 bg-[#7315c7] rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md shadow-purple-200">
-                  J
+                  H
                 </div>
                 <span className="font-bold text-xl text-gray-900 tracking-tight">
-                  Job<span className="text-[#7315c7]">Portal</span>
+                  Hire<span className="text-[#7315c7]"> Nova</span>
                 </span>
               </Link>
             </div>
@@ -221,7 +221,8 @@ const Navbar = () => {
             </div>
 
             {/* --- MOBILE HAMBURGER BUTTON --- */}
-            <div className="flex items-center md:hidden z-50">
+            <div className="flex items-center gap-4 md:hidden z-50">
+              {user && <NotificationDropdown />}
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="text-gray-600 hover:text-[#7315c7] p-2 rounded-md hover:bg-purple-50 transition-colors"
