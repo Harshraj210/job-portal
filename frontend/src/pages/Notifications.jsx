@@ -59,8 +59,9 @@ const Notifications = () => {
            navigate(`/job-applicants/${notification.relatedJob._id || notification.relatedJob}`);
        }
     }
-    // If applicant, maybe go to my-applications? 
-    if (notification.type === "status-update") {
+    
+    // For applicants
+    if (user.role !== 'recruiter' && (notification.type === "status-update" || notification.type === "info")) {
         navigate("/applications");
     }
   };
