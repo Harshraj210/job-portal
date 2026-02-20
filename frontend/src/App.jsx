@@ -24,6 +24,7 @@ import RecruiterGuard from "./components/RecruiterGuard";
 import RegisterCompany from "./pages/RegisterCompany";
 import MyApplications from "./pages/MyApplications";
 import Notifications from "./pages/Notifications";
+import RecruiterInterviews from "./pages/RecruiterInterviews";
 
 function App() {
   return (
@@ -107,6 +108,15 @@ function App() {
             element={
               <RecruiterGuard>
                 <JobApplicants />
+              </RecruiterGuard>
+            }
+          />
+
+          <Route
+            path="/recruiter-dashboard/interviews"
+            element={
+              <RecruiterGuard>
+                <RecruiterInterviews />
               </RecruiterGuard>
             }
           />
