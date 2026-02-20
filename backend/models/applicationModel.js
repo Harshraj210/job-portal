@@ -15,8 +15,12 @@ const applicationSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "reviewed", "rejected"],
+      enum: ["pending", "viewed", "shortlisted", "rejected", "selected"],
       default: "pending",
+    },
+    recruiterMessage: {
+      type: String,
+      default: "",
     },
     resume: {
       type: String,

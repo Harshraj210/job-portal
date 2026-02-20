@@ -33,7 +33,11 @@ const userSchema = new mongoose.Schema(
     profile: {
       bio: { type: String },
       skills: { type: String },
-      resume: { type: String },
+      resume: { 
+        url: String, 
+        filename: String, 
+        uploadedAt: Date 
+      },
       experience: { type: String },
       education: { type: String },
       qualifications: { type: String },
