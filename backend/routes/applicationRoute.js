@@ -4,6 +4,7 @@ import {
   getMyApplication,
   getApplicationsForJob,
   updateApplicationStatus,
+  sendRecruiterMessage,
 } from "../controllers/applicationController.js";
 import {
   protectRoute,
@@ -20,6 +21,12 @@ router.put(
   protectRoute,
   isRecruiter,
   updateApplicationStatus
+);
+router.post(
+  "/:appId/message",
+  protectRoute,
+  isRecruiter,
+  sendRecruiterMessage
 );
 
 export default router;

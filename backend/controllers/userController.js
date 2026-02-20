@@ -282,6 +282,59 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const uploadResume = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const userId = req.user._id;
+        const resumeUrl = `/uploads/resumes/${req.file.filename}`;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                "profile.resume": {
+                    url: resumeUrl,
+                    filename: req.file.originalname,
+                    uploadedAt: new Date()
+                }
+            },
+            { new: true }
+        ).select("-password");
+
+        return res.status(200).json({
+            message: "Resume uploaded successfully",
+            user: updatedUser
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Error uploading resume", error: error.message });
+    }
+};
+
+const deleteResume = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        // Optionally delete file from filesystem here (using fs.unlink)
+        // For now, we just remove reference from DB
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $unset: { "profile.resume": "" } },
+            { new: true }
+        ).select("-password");
+
+        return res.status(200).json({
+            message: "Resume deleted successfully",
+            user: updatedUser
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Error deleting resume", error: error.message });
+    }
+};
+
 export {
   handleRegister,
   handleLogin,
@@ -292,4 +345,6 @@ export {
   resetPassword,
   updateProfile,
   getProfile,
+  uploadResume,
+  deleteResume,
 };
