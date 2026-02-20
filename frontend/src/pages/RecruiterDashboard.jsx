@@ -113,6 +113,16 @@ const RecruiterDashboard = () => {
                 </p>
               </div>
             </Link>
+            <Link to="/recruiter-dashboard/interviews">
+              <div className="p-6 bg-orange-50 rounded-lg border border-orange-100 hover:shadow-lg transition-shadow cursor-pointer h-full">
+                <h3 className="font-bold text-xl text-orange-700 mb-2">
+                  Interview Scheduler
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Schedule and manage interviews with your candidates.
+                </p>
+              </div>
+            </Link>
           </div>
         )}
       </div>
