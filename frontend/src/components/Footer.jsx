@@ -11,10 +11,10 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-[#7315c7] rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                J
+                H
               </div>
               <span className="font-bold text-xl text-gray-900">
-                Job<span className="text-[#7315c7]">Portal</span>
+                Hire<span className="text-[#7315c7]"> Nova</span>
               </span>
             </div>
             <p className="text-gray-500 text-sm leading-relaxed">

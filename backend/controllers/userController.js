@@ -9,7 +9,7 @@ import sendEmail from "../utils/send_email.js";
 dotenv.config();
 
 const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.SECRET_KEY, {
+  return jwt.sign({ userId: id, role }, process.env.SECRET_KEY, {
     expiresIn: "30d",
   });
 };
@@ -40,17 +40,25 @@ const handleRegister = async (req, res) => {
       phoneNumber,
     });
 
-    return res.status(201).json({
-      message: "User Registered Successfully",
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-        phoneNumber: newUser.phoneNumber,
-      },
-      token: generateToken(newUser._id, newUser.role),
-    });
+    // Store JWT token inside HTTP-Only cookie
+    return res
+      .status(201)
+      .cookie("jwt", generateToken(newUser._id, newUser.role), {
+        httpOnly: true,
+        sameSite: "strict",
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      })
+      .json({
+        message: "User Registered Successfully",
+        user: {
+          id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+          phoneNumber: newUser.phoneNumber,
+        },
+        token: generateToken(newUser._id, newUser.role),
+      });
   } catch (error) {
     return res
       .status(500)
@@ -199,6 +207,14 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ message: "User not found" });
     }
 
+    const hashedotp = crypto.createHash("sha256").update(otp).digest("hex");
+    if (user.otp !== hashedotp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+    if (user.otpExpiry < Date.now()) {
+      return res.status(400).json({ message: "OTP has expired" });
+    }
+
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
 
@@ -216,7 +232,7 @@ const resetPassword = async (req, res) => {
 // logged-in user profil
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user._id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json(user);
@@ -238,50 +254,85 @@ const updateProfile = async (req, res) => {
       qualifications,
       skills,
     } = req.body;
+    
+    // Create an update object with only fields that are provided
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (phoneNumber) updateData.phoneNumber = phoneNumber;
+    if (bio) updateData.bio = bio;
+    if (experience) updateData.experience = experience;
+    if (education) updateData.education = education;
+    if (qualifications) updateData.qualifications = qualifications;
+    if (skills) updateData.skills = skills;
 
-    if (
-      !name ||
-      !email ||
-      !phoneNumber ||
-      !bio ||
-      !experience ||
-      !education ||
-      !qualifications ||
-      !skills
-    ) {
-      return res.status(400).json({ message: "Please fill all details" });
-    }
     const userId = req.user._id;
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      {
-        name,
-        email,
-        phoneNumber,
-        bio,
-        experience,
-        education,
-        qualifications,
-        skills,
-      },
+      updateData,
       { new: true }
     );
 
-    res.json({
-      id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      role: updatedUser.role,
-      phoneNumber: updatedUser.phoneNumber,
-    });
-
-    res.status(200).json({
+    return res.status(200).json({
       message: "Profile updated successfully",
       user: updatedUser,
     });
   } catch (error) {
     res.status(500).json({ message: "Error updating profile", error });
   }
+};
+
+const uploadResume = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const userId = req.user._id;
+        const resumeUrl = `/uploads/resumes/${req.file.filename}`;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                "profile.resume": {
+                    url: resumeUrl,
+                    filename: req.file.originalname,
+                    uploadedAt: new Date()
+                }
+            },
+            { new: true }
+        ).select("-password");
+
+        return res.status(200).json({
+            message: "Resume uploaded successfully",
+            user: updatedUser
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Error uploading resume", error: error.message });
+    }
+};
+
+const deleteResume = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        // Optionally delete file from filesystem here (using fs.unlink)
+        // For now, we just remove reference from DB
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $unset: { "profile.resume": "" } },
+            { new: true }
+        ).select("-password");
+
+        return res.status(200).json({
+            message: "Resume deleted successfully",
+            user: updatedUser
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Error deleting resume", error: error.message });
+    }
 };
 
 export {
@@ -294,4 +345,6 @@ export {
   resetPassword,
   updateProfile,
   getProfile,
+  uploadResume,
+  deleteResume,
 };

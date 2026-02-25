@@ -8,7 +8,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role:"applicant",
+    role: "applicant",
   });
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
@@ -103,17 +103,14 @@ const Login = () => {
               />
             </div>
             <div className="flex justify-end">
-              <button
-                type="button"
+              <Link
+                to="/forgot-password"
                 className="text-xs text-[#7315c7] hover:text-[#9324bc] hover:underline font-medium"
               >
                 Forgot Password?
-              </button>
+              </Link>
             </div>
           </div>
-          
-
-
 
           {/* Submit Button */}
           <button
@@ -132,7 +129,7 @@ const Login = () => {
 
           {/* Link to Register */}
           <div className="text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-600">
               New to JobPortal?{" "}
               <Link
                 to="/register"

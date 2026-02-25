@@ -2,8 +2,12 @@ import Company from "../models/CompanyModel.js";
 
 const registerCompany = async (req, res) => {
   try {
-    if(req.user.role !== "recruiter"){
-      return  res.status(403).json({ message: "Access Denied: Only recruiters can register a company" });
+    if (req.user.role !== "recruiter") {
+      return res
+        .status(403)
+        .json({
+          message: "Access Denied: Only recruiters can register a company",
+        });
     }
     const { companyName } = req.body;
 
@@ -32,6 +36,7 @@ const getCompany = async (req, res) => {
   try {
     const userId = req.user._id;
     const companies = await Company.find({ userId });
+    return res.status(200).json(companies);
     if (!companies) {
       return res.status(404).json({ message: "No companies found" });
     }
@@ -76,5 +81,17 @@ const updateCompany = async (req, res) => {
     return res.status(500).json({ message: "Server Error" });
   }
 };
+const checkCompanyExists = async (req, res) => {
+  try {
+    const company = await Company.findOne({ userId: req.user._id });
 
-export { registerCompany, getCompany, updateCompany, getCompanyById };
+    return res.status(200).json({
+      hasCompany: !!company,
+      company,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export { registerCompany, getCompany, updateCompany, getCompanyById, checkCompanyExists, };

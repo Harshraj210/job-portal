@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import PostJob from "./pages/PostJob";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
 import { Toaster } from "react-hot-toast";
 import Register from "./pages/Register";
 import RecruiterRegister from "./pages/RecruiterRegister";
@@ -19,6 +20,11 @@ import JobApplicants from "./pages/JobApplicants";
 import ViewApplications from "./pages/ViewApplications";
 import SavedJobs from "./pages/SavedJobs";
 import EditJob from "./pages/EditJob";
+import RecruiterGuard from "./components/RecruiterGuard";
+import RegisterCompany from "./pages/RegisterCompany";
+import MyApplications from "./pages/MyApplications";
+import Notifications from "./pages/Notifications";
+import RecruiterInterviews from "./pages/RecruiterInterviews";
 
 function App() {
   return (
@@ -30,38 +36,92 @@ function App() {
       {/* Main Content */}
       <main className="flex-grow w-full max-w-7xl mx-auto px-4">
         <Routes>
+          {/* Public pages */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/companies" element={<Companies />} />
 
           {/* Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Jobs */}
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
           <Route path="/saved-jobs" element={<SavedJobs />} />
+          <Route path="/applications" element={<MyApplications />} />
           <Route path="/edit-job/:id" element={<EditJob />} />
 
 
-          {/* Companies */}
-          <Route path="/companies" element={<Companies />} />
-
-          {/* Recruiter */}
-          <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
-          <Route path="/recruiter-dashboard/post-job" element={<PostJob />} />
+          {/* Profile */}
           <Route path="/profile" element={<Profile />} />
+          <Route path="/notifications" element={<Notifications />} />
+
+          {/* Recruiter (PROTECTED) */}
+          <Route
+            path="/recruiter-dashboard"
+            element={
+              <RecruiterGuard>
+                <RecruiterDashboard />
+              </RecruiterGuard>
+            }
+          />
+          <Route
+            path="/register-company"
+            element={
+              <RecruiterGuard>
+                <RegisterCompany />
+              </RecruiterGuard>
+            }
+          />
+
+          <Route
+            path="/recruiter-dashboard/post-job"
+            element={
+              <RecruiterGuard>
+                <PostJob />
+              </RecruiterGuard>
+            }
+          />
+
           <Route
             path="/recruiter-dashboard/manage-jobs"
-            element={<ManageJobs />}
-          />
-          <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
-          <Route
-            path="/recruiter-dashboard/applications"
-            element={<ViewApplications />}
+            element={
+              <RecruiterGuard>
+                <ManageJobs />
+              </RecruiterGuard>
+            }
           />
 
-          {/* 404 Page */}
+          <Route
+            path="/recruiter-dashboard/applications"
+            element={
+              <RecruiterGuard>
+                <ViewApplications />
+              </RecruiterGuard>
+            }
+          />
+
+          <Route
+            path="/job-applicants/:jobId"
+            element={
+              <RecruiterGuard>
+                <JobApplicants />
+              </RecruiterGuard>
+            }
+          />
+
+          <Route
+            path="/recruiter-dashboard/interviews"
+            element={
+              <RecruiterGuard>
+                <RecruiterInterviews />
+              </RecruiterGuard>
+            }
+          />
+
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

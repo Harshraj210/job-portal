@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { Menu, X, User, LogOut, Briefcase } from "lucide-react";
 import { gsap } from "gsap";
 import { GoArrowUpRight } from "react-icons/go";
+import NotificationDropdown from "./NotificationDropdown";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -124,10 +125,10 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
               >
                 <div className="w-8 h-8 bg-[#7315c7] rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md shadow-purple-200">
-                  J
+                  H
                 </div>
                 <span className="font-bold text-xl text-gray-900 tracking-tight">
-                  Job<span className="text-[#7315c7]">Portal</span>
+                  Hire<span className="text-[#7315c7]"> Nova</span>
                 </span>
               </Link>
             </div>
@@ -161,6 +162,9 @@ const Navbar = () => {
 
               {user ? (
                 <div className="flex items-center gap-4 pl-4 border-l border-gray-200">
+                  {/* Notification Dropdown */}
+                  <NotificationDropdown />
+                  
                   <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
                     <div className="w-8 h-8 bg-purple-50 rounded-full flex items-center justify-center text-[#7315c7]">
                       <User className="w-4 h-4" />
@@ -217,7 +221,8 @@ const Navbar = () => {
             </div>
 
             {/* --- MOBILE HAMBURGER BUTTON --- */}
-            <div className="flex items-center md:hidden z-50">
+            <div className="flex items-center gap-4 md:hidden z-50">
+              {user && <NotificationDropdown />}
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="text-gray-600 hover:text-[#7315c7] p-2 rounded-md hover:bg-purple-50 transition-colors"

@@ -52,7 +52,7 @@ const createJob = async (req, res) => {
       location,
       salary,
       jobType,
-      postedBy: req.user.id,
+      postedBy: req.user._id,
       company: req.user.companyId,
     });
 
@@ -83,7 +83,7 @@ const createJob = async (req, res) => {
 // Get all jobs posted by the logged-in recruiter
 const getMyJobs = async (req, res) => {
   try {
-    const jobs = await Job.find({ postedBy: req.user.id });
+    const jobs = await Job.find({ postedBy: req.user._id });
     return res.status(200).json(jobs);
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
@@ -98,7 +98,7 @@ const updateJob = async (req, res) => {
       return res.status(404).json({ message: "Job Not found baby" });
     }
     //   Check if the recruiter owns this job
-    if (job.postedBy.toString() !== req.user.id) {
+    if (job.postedBy.toString() !== req.user._id) {
       return res
         .status(403)
         .json({ message: "Not authorized to edit this job" });
@@ -120,7 +120,7 @@ const deleteJob = async (req, res) => {
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
-    if (job.postedBy.toString() !== req.user.id) {
+    if (job.postedBy.toString() !== req.user._id) {
       return res
         .status(403)
         .json({ message: "Not authorized to delete this job" });
@@ -172,7 +172,7 @@ const filterJobs = async (req, res) => {
 };
 const saveJob = async (req, res) => {
   try {
-    const userId = req.user.id; // From protectRoute
+    const userId = req.user._id; // From protectRoute
     const jobId = req.params.id; // Job to be saved
 
     const user = await User.findById(userId);
@@ -198,7 +198,7 @@ const saveJob = async (req, res) => {
 };
 const unsaveJob = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const jobId = req.params.id;
 
     const user = await User.findById(userId);
@@ -220,7 +220,7 @@ const unsaveJob = async (req, res) => {
 };
 const getSavedJobs = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     const user = await User.findById(userId).populate("savedJobs");
 

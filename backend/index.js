@@ -9,6 +9,8 @@ import applicationRoutes from "./routes/applicationRoute.js";
 import companyRoutes from "./routes/CompanyRoute.js";
 import authRoutes from "./routes/authRoute.js";
 import jobRoutes from "./routes/jobRoute.js";
+import notificationRoutes from "./routes/notificationRoute.js";
+import interviewRoutes from "./routes/interviewRoute.js";
 import connectDB from "./Database/db.js";
 
 dotenv.config();
@@ -38,6 +40,14 @@ app.use("/api/company", companyRoutes);
 
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/interviews", interviewRoutes);
+// Serve uploads
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.get('/', (req, res) => {
   return res
     .status(200)
