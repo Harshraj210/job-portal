@@ -42,18 +42,21 @@ const Navbar = () => {
       bgColor: "#7315c7",
       textColor: "#fff",
       links: [
+        // My Profile is available to ALL logged-in users — was missing from mobile!
+        { label: "My Profile", href: "/profile" },
         ...(user.role === "recruiter"
           ? [{ label: "Recruiter Dashboard", href: "/recruiter-dashboard" }]
           : [
               { label: "My Applications", href: "/applications" },
               { label: "Saved Jobs", href: "/saved-jobs" },
             ]),
+        { label: "Notifications", href: "/notifications" },
       ],
     });
   } else {
     mobileNavItems.push({
       label: "Get Started",
-      bgColor: "#1f2937", // Dark gray
+      bgColor: "#1f2937",
       textColor: "#fff",
       links: [
         { label: "Login", href: "/login" },
