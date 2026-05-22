@@ -46,8 +46,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// Handle preflight for all routes — Express v5 requires (.*) not * for wildcards
-app.options("(.*)", cors(corsOptions));
 
 app.use(cookieParser());
 app.use(express.json());
