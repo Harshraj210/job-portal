@@ -43,12 +43,13 @@ const handleRegister = async (req, res) => {
     // Generate token once and reuse
     const token = generateToken(newUser._id, newUser.role);
 
-    // Store JWT token inside HTTP-Only cookie
+    // sameSite:'none' + secure:true required for cross-origin requests (Vercel → Render).
     return res
       .status(201)
       .cookie("jwt", token, {
         httpOnly: true,
-        sameSite: "strict",
+        sameSite: "none",
+        secure: true,
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       })
       .json({
@@ -60,7 +61,7 @@ const handleRegister = async (req, res) => {
           role: newUser.role,
           phoneNumber: newUser.phoneNumber,
         },
-        token,
+        token, // Return token in body so frontend can store in localStorage for Bearer auth
       });
   } catch (error) {
     return res
@@ -101,12 +102,14 @@ const handleLogin = async (req, res) => {
       expiresIn: "1d",
     });
 
-    // Store JWT token inside HTTP-Only cookie
+    // Store JWT token inside HTTP-Only cookie.
+    // sameSite:'none' + secure:true required for cross-origin requests (Vercel → Render).
     return res
       .status(200)
       .cookie("jwt", token, {
         httpOnly: true,
-        sameSite: "strict",
+        sameSite: "none",
+        secure: true,
         maxAge: 1 * 24 * 60 * 60 * 1000,
       })
       .json({
@@ -119,6 +122,7 @@ const handleLogin = async (req, res) => {
           phoneNumber: user.phoneNumber,
           profilePicture: user.profilePicture,
         },
+        token, // Return token in body so frontend can store in localStorage for Bearer auth
       });
   } catch (error) {
     console.error(error);

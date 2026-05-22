@@ -23,11 +23,13 @@ export const AuthProvider = ({ children }) => {
     checkUser();
   }, []);
 
-  const login = async (email, password,role) => {
-    const res = await api.post("/auth/login", { email, password,role });
+  const login = async (email, password, role) => {
+    const res = await api.post("/auth/login", { email, password, role });
     setUser(res.data.user);
-     localStorage.setItem("token", res.data.token);
-
+    // Save token so Bearer auth interceptor works for cross-origin requests (Vercel → Render)
+    if (res.data.token) {
+      localStorage.setItem("token", res.data.token);
+    }
     localStorage.setItem("user", JSON.stringify(res.data.user));
     return res.data;
   };
