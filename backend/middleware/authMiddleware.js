@@ -5,10 +5,19 @@ dotenv.config();
 
 const protectRoute = (req, res, next) => {
   try {
-    const token = req.cookies.jwt;
+    // Support both cookie-based JWT and Authorization: Bearer <token>
+    let token = req.cookies.jwt;
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
+      }
+    }
+
     if (!token) {
       return res.status(401).json({ message: "User not authenticated" });
     }
+
     const decode = jwt.verify(token, process.env.SECRET_KEY);
     if (!decode) {
       return res.status(401).json({ message: "Invalid token" });

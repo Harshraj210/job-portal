@@ -1,24 +1,37 @@
 import { useState, useEffect, useRef } from "react";
 import api from "../lib/axios";
 import toast from "react-hot-toast";
-import { Loader2, User, FileText, Upload, Trash2, Eye, RefreshCw } from "lucide-react";
+import { Loader2, User, FileText, Upload, Trash2, Eye, RefreshCw, AlertCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { user: authUser } = useAuth();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
   const fetchProfile = async () => {
+    setLoading(true);
+    setFetchError(null);
     try {
       const res = await api.get("/auth/profile");
       setUser(res.data);
     } catch (error) {
-      toast.error("Unauthorized. Please login again!");
+      const status = error.response?.status;
+      if (status === 401) {
+        toast.error("Session expired. Please login again.");
+        navigate("/login");
+        return;
+      }
+      const msg = error.response?.data?.message || error.message || "Failed to load profile";
+      setFetchError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -116,10 +129,27 @@ const Profile = () => {
       setShowDeleteModal(true);
   };
 
-  if (loading || !user)
+  if (loading)
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="flex flex-col justify-center items-center h-64 gap-3">
         <Loader2 className="animate-spin w-8 h-8 text-[#7315c7]" />
+        <p className="text-sm text-gray-500">Loading your profile...</p>
+      </div>
+    );
+
+  if (fetchError || !user)
+    return (
+      <div className="flex flex-col justify-center items-center h-64 gap-4 px-4">
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+          <AlertCircle className="w-8 h-8 text-red-500" />
+        </div>
+        <p className="text-gray-700 font-medium text-center">{fetchError || "Could not load profile"}</p>
+        <button
+          onClick={fetchProfile}
+          className="px-5 py-2.5 bg-[#7315c7] text-white font-medium rounded-xl hover:bg-[#8d23d7] transition-colors"
+        >
+          Retry
+        </button>
       </div>
     );
   
