@@ -162,17 +162,17 @@ const Profile = () => {
   const profile = user.profile || {};
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-purple-50 via-white to-purple-100 px-4 py-10 relative">
-      <div className="bg-white shadow-xl rounded-3xl w-full max-w-2xl p-8 border border-gray-100">
+    <div className="min-h-screen flex justify-center items-start bg-gradient-to-br from-purple-50 via-white to-purple-100 px-3 sm:px-4 py-6 sm:py-10 relative">
+      <div className="bg-white shadow-xl rounded-2xl sm:rounded-3xl w-full max-w-2xl p-4 sm:p-8 border border-gray-100">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-24 h-24 bg-purple-100 rounded-full mx-auto flex items-center justify-center text-[#7315c7]">
-            <User size={48} />
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-purple-100 rounded-full mx-auto flex items-center justify-center text-[#7315c7]">
+            <User size={40} className="sm:w-12 sm:h-12" />
           </div>
-          <h2 className="font-bold text-3xl mt-3 text-gray-900">
+          <h2 className="font-bold text-2xl sm:text-3xl mt-3 text-gray-900 break-words">
             {user?.name}
           </h2>
-          <p className="text-sm text-gray-500">{user?.email}</p>
+          <p className="text-sm text-gray-500 break-all">{user?.email}</p>
         </div>
 
         {/* Resume Section - Only for Applicants */}
@@ -224,29 +224,41 @@ const Profile = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="text-center py-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#7315c7] hover:bg-purple-50/30 transition-all group">
+                    <div className="text-center py-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-[#7315c7] hover:bg-purple-50/30 transition-all">
                         <div className="mb-3">
-                            <Upload className="w-10 h-10 mx-auto text-gray-400 group-hover:text-[#7315c7] transition-colors" />
+                            <Upload className="w-10 h-10 mx-auto text-gray-400" />
                         </div>
                         <p className="text-sm text-gray-600 mb-4">
                             Upload your resume to apply for jobs faster. <br/>
                             <span className="text-xs text-gray-400">(PDF, DOC, DOCX up to 2MB)</span>
                         </p>
-                        <button 
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={uploading}
-                            className="px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg hover:border-[#7315c7] hover:text-[#7315c7] transition-colors disabled:opacity-50"
-                        >
-                            {uploading ? "Uploading..." : "Select Resume"}
-                        </button>
+                        {/* Wrap label+input so tap directly hits the input — works on ALL mobile browsers */}
+                        <label className="relative inline-block cursor-pointer">
+                            <span
+                                className={`px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg hover:border-[#7315c7] hover:text-[#7315c7] transition-colors block ${
+                                    uploading ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
+                            >
+                                {uploading ? "Uploading..." : "Select Resume"}
+                            </span>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                accept=".pdf,.doc,.docx"
+                                onChange={handleFileChange}
+                                disabled={uploading}
+                                className="absolute inset-0 opacity-0 w-full h-full cursor-pointer disabled:cursor-not-allowed"
+                            />
+                        </label>
                     </div>
                 )}
-                <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    className="hidden" 
+                {/* Hidden input kept as fallback for replace-resume button */}
+                <input
+                    type="file"
+                    ref={fileInputRef}
                     accept=".pdf,.doc,.docx"
                     onChange={handleFileChange}
+                    className="hidden"
                 />
             </div>
         )}
