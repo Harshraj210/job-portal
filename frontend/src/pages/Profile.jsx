@@ -5,6 +5,9 @@ import { Loader2, User, FileText, Upload, Trash2, Eye, RefreshCw, AlertCircle } 
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+// Backend base URL (without /api) for serving static files like resumes
+const BACKEND_URL = (import.meta.env.VITE_API_URL || "https://job-portal-backend-3l3e.onrender.com/api").replace(/\/api$/, "");
+
 const Profile = () => {
   const { user: authUser } = useAuth();
   const navigate = useNavigate();
@@ -196,7 +199,7 @@ const Profile = () => {
                         </div>
                         <div className="flex items-center gap-2">
                             <a 
-                                href={typeof profile.resume === 'string' ? profile.resume : `http://localhost:5000${profile.resume.url}`} 
+                                href={typeof profile.resume === 'string' ? profile.resume : `${BACKEND_URL}${profile.resume.url}`} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
                                 className="p-2 text-gray-600 hover:text-[#7315c7] hover:bg-purple-50 rounded-lg transition-colors"

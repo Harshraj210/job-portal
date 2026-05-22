@@ -1,53 +1,54 @@
-//  import axios from "axios";
-
-//  const api = axios.create({
-//    baseURL: "http://localhost:5000/api",
-//     withCredentials: true,
-  
-//  });
-//  api.interceptors.request.use((config) => {
-//    const token = localStorage.getItem("token");
-//    if (token) {
-//      config.headers.Authorization = `Bearer ${token}`;
-//    }
-//    return config;
-//  });
-
-
-//  export default api;
 import axios from "axios";
 
-// Use VITE_API_URL env var if set, otherwise fall back to the deployed backend.
-// For local dev: create frontend/.env.local with VITE_API_URL=http://localhost:3000/api
+// VITE_API_URL is set via:
+//   - Vercel: Environment Variables in the Vercel dashboard → VITE_API_URL = https://job-portal-backend-3l3e.onrender.com/api
+//   - Local dev: frontend/.env.local → VITE_API_URL = http://localhost:3000/api
+//   - If unset, falls back to the Render backend (safe for production)
 const BASE_URL =
   import.meta.env.VITE_API_URL ||
   "https://job-portal-backend-3l3e.onrender.com/api";
 
+// Log in browser console so you can verify which backend is being used
+console.info("[API] Backend URL:", BASE_URL);
+
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true, // send cookies cross-origin
-  timeout: 30000, // 30-second timeout (Render cold starts can be slow)
+  timeout: 30000,        // 30s timeout — Render free tier cold-starts take ~30s
 });
 
-// Attach Bearer token on every request so auth works even when cookies
-// are blocked cross-origin (common in local dev vs deployed backend).
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// ── Request interceptor ────────────────────────────────────────────────────
+// Attach Bearer token on EVERY request.
+// This is the PRIMARY auth mechanism for cross-origin (Vercel → Render) because
+// sameSite:'none' cookies require HTTPS on both ends AND correct CORS headers —
+// Bearer tokens in the Authorization header are more reliable across environments.
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token && token !== "undefined" && token !== "null") {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-// Log 401 errors to make debugging easier
+// ── Response interceptor ───────────────────────────────────────────────────
+// Log 401s with full URL so you can see exactly which endpoint is failing
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      console.warn("API 401 Unauthorized:", error.config?.url);
+      console.error(
+        "[API 401] Unauthorized on:",
+        error.config?.method?.toUpperCase(),
+        error.config?.url,
+        "| token present:", !!localStorage.getItem("token")
+      );
     }
     return Promise.reject(error);
   }
 );
 
 export default api;
+
