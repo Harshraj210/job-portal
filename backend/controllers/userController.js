@@ -30,7 +30,7 @@ const handleRegister = async (req, res) => {
         return res.status(409).json({ message: "Phone number already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 8);
 
     const newUser = await User.create({
       name,
@@ -40,10 +40,13 @@ const handleRegister = async (req, res) => {
       phoneNumber,
     });
 
+    // Generate token once and reuse
+    const token = generateToken(newUser._id, newUser.role);
+
     // Store JWT token inside HTTP-Only cookie
     return res
       .status(201)
-      .cookie("jwt", generateToken(newUser._id, newUser.role), {
+      .cookie("jwt", token, {
         httpOnly: true,
         sameSite: "strict",
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
@@ -57,7 +60,7 @@ const handleRegister = async (req, res) => {
           role: newUser.role,
           phoneNumber: newUser.phoneNumber,
         },
-        token: generateToken(newUser._id, newUser.role),
+        token,
       });
   } catch (error) {
     return res
@@ -255,23 +258,24 @@ const updateProfile = async (req, res) => {
       skills,
     } = req.body;
     
-    // Create an update object with only fields that are provided
+    // Build update using dot-notation to correctly target the nested profile subdocument
     const updateData = {};
     if (name) updateData.name = name;
     if (email) updateData.email = email;
     if (phoneNumber) updateData.phoneNumber = phoneNumber;
-    if (bio) updateData.bio = bio;
-    if (experience) updateData.experience = experience;
-    if (education) updateData.education = education;
-    if (qualifications) updateData.qualifications = qualifications;
-    if (skills) updateData.skills = skills;
+    // Profile fields live inside the 'profile' subdocument in the schema
+    if (bio !== undefined) updateData["profile.bio"] = bio;
+    if (experience !== undefined) updateData["profile.experience"] = experience;
+    if (education !== undefined) updateData["profile.education"] = education;
+    if (qualifications !== undefined) updateData["profile.qualifications"] = qualifications;
+    if (skills !== undefined) updateData["profile.skills"] = skills;
 
     const userId = req.user._id;
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      updateData,
+      { $set: updateData },
       { new: true }
-    );
+    ).select("-password");
 
     return res.status(200).json({
       message: "Profile updated successfully",

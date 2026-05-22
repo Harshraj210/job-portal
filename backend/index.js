@@ -24,8 +24,21 @@ const port = process.env.PORT || 5000;
 // app.use(cors());
 
 
+const allowedOrigins = [
+  "https://job-portal-five-virid.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
 const corsOptions = {
-  origin: "https://job-portal-five-virid.vercel.app",
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, etc.) and whitelisted origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS policy: origin ${origin} not allowed`));
+    }
+  },
   credentials: true,
   optionSuccessStatus: 200,
 };
