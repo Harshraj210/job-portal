@@ -131,11 +131,15 @@ const handleLogin = async (req, res) => {
 };
 
 const logOut = (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  return res.status(200).json({ message: "Logged out successfully" });
+  // Clear the jwt cookie so browser discards it
+  res
+    .status(200)
+    .clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    })
+    .json({ message: "Logged out successfully" });
 };
 
 const forgotPassword = async (req, res) => {
