@@ -32,7 +32,7 @@ const Register = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await register(
+      const data = await register(
         formData.name,
         formData.email,
         formData.password,
@@ -40,9 +40,13 @@ const Register = () => {
         formData.phoneNumber
       );
       toast.success("Account created successfully!");
-      navigate("/jobs");
+      // Route to the right dashboard based on role
+      if (data?.user?.role === "recruiter") {
+        navigate("/recruiter-dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
-      
       toast.error(error.response?.data?.message || "Registration failed");
     } finally {
       setIsLoading(false);

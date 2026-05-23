@@ -55,16 +55,21 @@ export const AuthProvider = ({ children }) => {
     try {
       await api.post("/auth/logout");
     } catch (error) {
+      // Backend logout failure is non-fatal — always clear client state
       console.error("Logout failed", error);
     }
+    // Clear all client-side auth state
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    // Remove the Authorization header from the axios instance so the next
+    // request doesn't carry a stale token before the page has navigated away.
+    delete api.defaults.headers.common["Authorization"];
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, setUser, login, register, logout, loading }}>
+      {children}
     </AuthContext.Provider>
   );
 };
