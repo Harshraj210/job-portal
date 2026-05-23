@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Mail, Lock, HelpCircle, ArrowRight, Loader2 } from "lucide-react";
 
@@ -13,6 +13,9 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  // If the user was redirected from a protected page, go back there after login.
+  const from = location.state?.from?.pathname || null;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,9 +25,16 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await login(formData.email, formData.password, formData.role);
+      const data = await login(formData.email, formData.password, formData.role);
       toast.success("Welcome back!");
-      navigate("/");
+      // Priority: intended page → recruiter dashboard → home
+      if (from) {
+        navigate(from, { replace: true });
+      } else if (data?.user?.role === "recruiter") {
+        navigate("/recruiter-dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     } finally {

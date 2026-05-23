@@ -1,6 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Global smooth scroll & perf ─────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 html, body {
   overflow-x: hidden;
+}
+/* Ensure anchor sections clear sticky navbar */
+[id] {
+  scroll-margin-top: 72px;
+}
+/* GPU-accelerate frequently animated elements */
+.hero-animate {
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }

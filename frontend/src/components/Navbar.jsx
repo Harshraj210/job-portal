@@ -28,7 +28,8 @@ const Navbar = () => {
       bgColor: "#f3e8ff",
       textColor: "#4c1d95",
       links: [
-        { label: "Home", href: "/" },
+        // Home is a protected route — only show it when logged in
+        ...(user ? [{ label: "Home", href: "/" }] : []),
         { label: "Find Jobs", href: "/jobs" },
         { label: "Companies", href: "/companies" },
         { label: "About Us", href: "/about" },
@@ -138,12 +139,15 @@ const Navbar = () => {
 
             {/* --- DESKTOP MENU --- */}
             <div className="hidden md:flex items-center space-x-8">
-              <Link
-                to="/"
-                className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
-              >
-                Home
-              </Link>
+              {/* Home only shown to authenticated users — route is protected */}
+              {user && (
+                <Link
+                  to="/"
+                  className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
+                >
+                  Home
+                </Link>
+              )}
               <Link
                 to="/jobs"
                 className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
