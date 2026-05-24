@@ -252,14 +252,7 @@ const Profile = () => {
                         </label>
                     </div>
                 )}
-                {/* Hidden input kept as fallback for replace-resume button */}
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileChange}
-                    className="hidden"
-                />
+
             </div>
         )}
 

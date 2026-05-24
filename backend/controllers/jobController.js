@@ -7,7 +7,7 @@ import sendEmail from "../utils/send_email.js";
 
 const getallJobs = async (req, res) => {
   try {
-    const jobs = await Job.find({}).populate("companyName");
+    const jobs = await Job.find({});
     return res.status(200).json(jobs);
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
@@ -98,7 +98,8 @@ const updateJob = async (req, res) => {
       return res.status(404).json({ message: "Job Not found baby" });
     }
     //   Check if the recruiter owns this job
-    if (job.postedBy.toString() !== req.user._id) {
+    // Both sides must be strings for the comparison to work correctly
+    if (job.postedBy.toString() !== req.user._id.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to edit this job" });
@@ -120,7 +121,8 @@ const deleteJob = async (req, res) => {
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
-    if (job.postedBy.toString() !== req.user._id) {
+    // Both sides must be strings for the comparison to work correctly
+    if (job.postedBy.toString() !== req.user._id.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to delete this job" });

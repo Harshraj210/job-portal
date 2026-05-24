@@ -9,6 +9,8 @@ import { formatDistanceToNow } from "date-fns";
 const JobCard = ({ job }) => {
   const { user } = useAuth();
   const [saved, setSaved] = useState(user?.savedJobs?.includes(job._id) || false);
+  const [isApplying, setIsApplying] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
   const navigate = useNavigate();
 
   const toggleSave = async (e) => {
@@ -41,12 +43,18 @@ const JobCard = ({ job }) => {
           return;
       }
       
+      setIsApplying(true);
       try {
         await api.post(`/applications/${job._id}`);
         toast.success("Application submitted successfully!");
-        // Optional: Trigger a refresh or local state update
+        setHasApplied(true);
       } catch (error) {
+        if (error.response?.data?.message?.toLowerCase().includes('already applied')) {
+            setHasApplied(true);
+        }
         toast.error(error.response?.data?.message || "Application failed");
+      } finally {
+        setIsApplying(false);
       }
   }
 
@@ -107,9 +115,14 @@ const JobCard = ({ job }) => {
          </Link>
          <button 
            onClick={handleApply}
-           className="px-4 py-2 bg-[#7315c7] text-white rounded-lg hover:bg-[#5e11a3] font-medium transition-colors shadow-sm shadow-purple-200"
+           disabled={isApplying || hasApplied || user?.role === 'recruiter'}
+           className={`px-4 py-2 rounded-lg font-medium transition-colors shadow-sm ${
+             hasApplied || user?.role === 'recruiter' 
+               ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+               : 'bg-[#7315c7] text-white hover:bg-[#5e11a3] shadow-purple-200'
+           } disabled:opacity-70 flex justify-center items-center`}
          >
-            Apply Now
+            {isApplying ? 'Applying...' : hasApplied ? 'Applied' : 'Apply Now'}
          </button>
       </div>
     </div>

@@ -8,9 +8,6 @@ const BASE_URL =
   import.meta.env.VITE_API_URL ||
   "https://job-portal-backend-3l3e.onrender.com/api";
 
-// Log in browser console so you can verify which backend is being used
-console.info("[API] Backend URL:", BASE_URL);
-
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true, // send cookies cross-origin
