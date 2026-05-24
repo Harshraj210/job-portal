@@ -1,20 +1,45 @@
-import { useState, useRef, useLayoutEffect, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Menu, X, User, LogOut, Briefcase } from "lucide-react";
-import { gsap } from "gsap";
-import { GoArrowUpRight } from "react-icons/go";
+import { Menu, X, User, LogOut, Sparkles, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import NotificationDropdown from "./NotificationDropdown";
+
+const NavLink = ({ to, children, isActive, onClick }) => (
+  <Link
+    to={to}
+    onClick={onClick}
+    className={`relative px-3 py-2 text-sm font-medium transition-colors ${
+      isActive ? "text-[#7315c7]" : "text-gray-600 hover:text-gray-900"
+    }`}
+  >
+    {children}
+    {isActive && (
+      <motion.div
+        layoutId="navbar-indicator"
+        className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#7315c7] rounded-full"
+        initial={false}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+      />
+    )}
+  </Link>
+);
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // --- GSAP ANIMATION REFS & LOGIC ---
-  const navRef = useRef(null);
-  const cardsRef = useRef([]);
-  const tlRef = useRef(null);
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -22,290 +47,237 @@ const Navbar = () => {
     setIsOpen(false);
   };
 
-  const mobileNavItems = [
-    {
-      label: "Navigation",
-      bgColor: "#f3e8ff",
-      textColor: "#4c1d95",
-      links: [
-        // Home is a protected route — only show it when logged in
-        ...(user ? [{ label: "Home", href: "/" }] : []),
-        { label: "Find Jobs", href: "/jobs" },
-        { label: "Companies", href: "/companies" },
-        { label: "About Us", href: "/about" },
-      ],
-    },
+  const navLinks = [
+    ...(user ? [{ label: "Home", href: "/" }] : []),
+    { label: "Find Jobs", href: "/jobs" },
+    { label: "Companies", href: "/companies" },
+    { label: "About us", href: "/about" },
   ];
-
-  if (user) {
-    mobileNavItems.push({
-      label: `Profile (${user.name})`,
-      bgColor: "#7315c7",
-      textColor: "#fff",
-      links: [
-        // My Profile is available to ALL logged-in users — was missing from mobile!
-        { label: "My Profile", href: "/profile" },
-        ...(user.role === "recruiter"
-          ? [{ label: "Recruiter Dashboard", href: "/recruiter-dashboard" }]
-          : [
-              { label: "My Applications", href: "/applications" },
-              { label: "Saved Jobs", href: "/saved-jobs" },
-            ]),
-        { label: "Notifications", href: "/notifications" },
-      ],
-    });
-  } else {
-    mobileNavItems.push({
-      label: "Get Started",
-      bgColor: "#1f2937",
-      textColor: "#fff",
-      links: [
-        { label: "Login", href: "/login" },
-        { label: "Sign Up", href: "/register" },
-        { label: "Post a Job", href: "/register-company" },
-      ],
-    });
-  }
-
-  // --- GSAP ANIMATION SETUP ---
-  useLayoutEffect(() => {
-    const navEl = navRef.current;
-    if (!navEl) return;
-
-    // Initial Set: Hidden and height 0
-    gsap.set(navEl, { height: 0, opacity: 0, display: "none" });
-
-    const tl = gsap.timeline({ paused: true });
-
-    tl.to(navEl, {
-      display: "block",
-      duration: 0,
-    })
-      .to(navEl, {
-        height: "auto",
-        opacity: 1,
-        duration: 0.4,
-        ease: "power3.out",
-      })
-      .fromTo(
-        cardsRef.current,
-        { y: 50, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.4, ease: "power3.out", stagger: 0.08 },
-        "-=0.2"
-      );
-
-    tlRef.current = tl;
-
-    return () => {
-      tl.kill();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (tlRef.current) {
-      if (isOpen) {
-        tlRef.current.play();
-      } else {
-        tlRef.current.reverse();
-      }
-    }
-  }, [isOpen]);
-
-  // Helper to set refs for cards
-  const setCardRef = (el, index) => {
-    if (el) cardsRef.current[index] = el;
-  };
 
   return (
     <>
-      <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+          scrolled
+            ? "bg-white/70 backdrop-blur-xl shadow-sm border-b border-gray-200/50 py-2"
+            : "bg-white border-b border-gray-100 py-4"
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            {/* --- LOGO --- */}
-            <div className="flex items-center z-50">
-              <Link
-                to="/"
-                className="flex items-center gap-2"
-                onClick={() => setIsOpen(false)}
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 z-50 group" onClick={() => setIsOpen(false)}>
+              <motion.div
+                whileHover={{ rotate: 180 }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                className="w-8 h-8 bg-gradient-to-br from-[#7315c7] to-[#9333ea] rounded-xl flex items-center justify-center shadow-lg shadow-[#7315c7]/30"
               >
-                <div className="w-8 h-8 bg-[#7315c7] rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md shadow-purple-200">
-                  H
-                </div>
-                <span className="font-bold text-xl text-gray-900 tracking-tight">
-                  Hire<span className="text-[#7315c7]"> Nova</span>
-                </span>
-              </Link>
+                <Sparkles className="w-4 h-4 text-white" />
+              </motion.div>
+              <span className="font-bold text-xl text-gray-900 tracking-tight group-hover:opacity-80 transition-opacity">
+                Hire<span className="text-[#7315c7]">Nova</span>
+              </span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-2">
+              {navLinks.map((link) => (
+                <NavLink
+                  key={link.href}
+                  to={link.href}
+                  isActive={location.pathname === link.href}
+                >
+                  {link.label}
+                </NavLink>
+              ))}
             </div>
 
-            {/* --- DESKTOP MENU --- */}
-            <div className="hidden md:flex items-center space-x-8">
-              {/* Home only shown to authenticated users — route is protected */}
-              {user && (
-                <Link
-                  to="/"
-                  className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
-                >
-                  Home
-                </Link>
-              )}
-              <Link
-                to="/jobs"
-                className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
-              >
-                Find Jobs
-              </Link>
-              <Link
-                to="/companies"
-                className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
-              >
-                Companies
-              </Link>
-              <Link
-                to="/about"
-                className="text-gray-600 hover:text-[#7315c7] font-medium transition-colors"
-              >
-                About us
-              </Link>
-
+            {/* Desktop Actions */}
+            <div className="hidden md:flex items-center gap-4">
               {user ? (
-                <div className="flex items-center gap-4 pl-4 border-l border-gray-200">
-                  {/* Notification Dropdown */}
+                <div className="flex items-center gap-5 pl-5 border-l border-gray-200">
                   <NotificationDropdown />
-                  
-                  <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <div className="w-8 h-8 bg-purple-50 rounded-full flex items-center justify-center text-[#7315c7]">
-                      <User className="w-4 h-4" />
-                    </div>
-                    {user.name}
-                  </span>
-                  <Link
-                    to="/profile"
-                    className="text-sm text-[#7315c7] font-semibold hover:underline"
-                  >
-                    My Profile
-                  </Link>
-                  {user.role === "applicant" && (
-                    <Link
-                      to="/saved-jobs"
-                      className="text-sm text-[#7315c7] font-semibold hover:underline"
-                    >
-                      Saved Jobs
-                    </Link>
-                  )}
 
-                  {user.role === "recruiter" && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center border border-purple-100">
+                      <User className="w-4 h-4 text-[#7315c7]" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-gray-900 leading-tight">
+                        {user.name}
+                      </span>
+                      <span className="text-[10px] text-gray-500 capitalize font-medium">
+                        {user.role}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
                     <Link
-                      to="/recruiter-dashboard"
-                      className="bg-purple-50 text-[#7315c7] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-100 transition-colors"
+                      to={user.role === "recruiter" ? "/recruiter-dashboard" : "/profile"}
+                      className="text-sm font-medium text-gray-600 hover:text-[#7315c7] transition-colors"
                     >
-                      Dashboard
+                      {user.role === "recruiter" ? "Dashboard" : "Profile"}
                     </Link>
-                  )}
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors"
-                    title="Logout"
-                  >
-                    <LogOut className="w-5 h-5" />
-                  </button>
+                    <button
+                      onClick={handleLogout}
+                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                      title="Logout"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 pl-5 border-l border-gray-200">
                   <Link
                     to="/login"
-                    className="text-gray-600 hover:text-[#7315c7] font-medium px-3 py-2 rounded-lg hover:bg-purple-50 transition-all"
+                    className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2 transition-colors"
                   >
-                    Login
+                    Log in
                   </Link>
                   <Link
                     to="/register"
-                    className="bg-[#7315c7] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[#9324bc] shadow-lg shadow-purple-200 hover:shadow-purple-300 transition-all active:scale-95"
+                    className="group relative inline-flex items-center justify-center px-5 py-2 text-sm font-semibold text-white transition-all duration-200 bg-[#7315c7] rounded-lg hover:bg-[#5e11a3] hover:shadow-lg hover:shadow-purple-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7315c7]"
                   >
-                    Sign Up
+                    Get Started
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* --- MOBILE HAMBURGER BUTTON --- */}
+            {/* Mobile Menu Button */}
             <div className="flex items-center gap-4 md:hidden z-50">
               {user && <NotificationDropdown />}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="text-gray-600 hover:text-[#7315c7] p-2 rounded-md hover:bg-purple-50 transition-colors"
+                className="p-2 -mr-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                {isOpen ? (
-                  <X className="w-7 h-7" />
-                ) : (
-                  <Menu className="w-7 h-7" />
-                )}
+                <motion.div
+                  initial={false}
+                  animate={{ rotate: isOpen ? 90 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </motion.div>
               </button>
             </div>
           </div>
         </div>
+      </motion.nav>
 
-        {/* --- ANIMATED MOBILE MENU (Integrated Here) --- */}
-        <div className="absolute left-0 right-0 z-40 w-full px-4 md:hidden top-[64px]">
-          <nav
-            ref={navRef}
-            className="block w-full bg-white rounded-xl shadow-xl overflow-hidden"
-          >
-            <div className="p-4 flex flex-col gap-3 card-nav-content">
-              {mobileNavItems.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-5 rounded-xl"
-                  ref={(el) => setCardRef(el, idx)}
-                  style={{
-                    backgroundColor: item.bgColor,
-                    color: item.textColor,
-                  }}
-                >
-                  <div className="text-lg font-bold mb-3 border-b border-white/20 pb-2">
-                    {item.label}
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    {item.links.map((lnk, i) => (
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+              onClick={() => setIsOpen(false)}
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+              className="fixed top-0 right-0 bottom-0 w-3/4 max-w-sm bg-white z-50 shadow-2xl flex flex-col md:hidden border-l border-gray-100"
+            >
+              <div className="p-6 flex-1 overflow-y-auto mt-16">
+                {user && (
+                  <div className="mb-8 pb-6 border-b border-gray-100">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center border border-purple-200">
+                        <User className="w-5 h-5 text-[#7315c7]" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900">{user.name}</p>
+                        <p className="text-xs font-medium text-[#7315c7] uppercase tracking-wider">
+                          {user.role}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2">
                       <Link
-                        key={i}
-                        to={lnk.href}
+                        to={user.role === "recruiter" ? "/recruiter-dashboard" : "/profile"}
                         onClick={() => setIsOpen(false)}
-                        className="flex items-center justify-between group cursor-pointer"
+                        className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-purple-50 text-sm font-medium transition-colors group"
                       >
-                        <span className="font-medium group-hover:underline underline-offset-2">
-                          {lnk.label}
-                        </span>
-                        <GoArrowUpRight className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                        {user.role === "recruiter" ? "Dashboard" : "My Profile"}
+                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#7315c7] transition-colors" />
                       </Link>
-                    ))}
-
-                    {/* Special Logout Button logic for the Profile card */}
-                    {user && item.label.includes("Profile") && (
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center justify-between group cursor-pointer text-left w-full mt-2 pt-2 border-t border-white/20"
-                      >
-                        <span className="font-medium group-hover:underline underline-offset-2">
-                          Logout
-                        </span>
-                        <LogOut className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
-                      </button>
-                    )}
+                      {user.role === "applicant" && (
+                        <Link
+                          to="/saved-jobs"
+                          onClick={() => setIsOpen(false)}
+                          className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-purple-50 text-sm font-medium transition-colors group"
+                        >
+                          Saved Jobs
+                          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#7315c7] transition-colors" />
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </nav>
-        </div>
-      </nav>
+                )}
 
-      {/* Overlay Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 md:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-3">
+                    Menu
+                  </p>
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={`block px-3 py-3 rounded-xl text-base font-medium transition-colors ${
+                        location.pathname === link.href
+                          ? "bg-purple-50 text-[#7315c7]"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-gray-100 bg-gray-50/50">
+                {user ? (
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-white border border-gray-200 rounded-xl text-red-600 font-medium hover:bg-red-50 hover:border-red-100 transition-all shadow-sm"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    <Link
+                      to="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="w-full py-3 text-center text-gray-700 font-semibold bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 transition-colors"
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setIsOpen(false)}
+                      className="w-full py-3 text-center text-white font-semibold bg-[#7315c7] rounded-xl shadow-md shadow-purple-200 hover:bg-[#5e11a3] transition-colors"
+                    >
+                      Get Started
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };
