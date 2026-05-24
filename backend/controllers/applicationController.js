@@ -1,6 +1,7 @@
 import Application from "../models/applicationModel.js";
 import Job from "../models/jobModel.js";
 import Notification from "../models/NotificationModel.js";
+import User from "../models/userModel.js";
 
 const applyForjob = async (req, res) => {
   try {
@@ -9,7 +10,7 @@ const applyForjob = async (req, res) => {
 
     const job = await Job.findById(jobId);
     if (!job) {
-      return res.status(401).json({ message: "Job not found" });
+      return res.status(404).json({ message: "Job not found" });
     }
     const alreadyApplied = await Application.findOne({
       job: jobId,
@@ -18,7 +19,7 @@ const applyForjob = async (req, res) => {
 
     if (alreadyApplied) {
       return res
-        .status(401)
+        .status(409)
         .json({ message: "You have already applied for this job!!" });
     }
     const application = await Application.create({
@@ -28,16 +29,17 @@ const applyForjob = async (req, res) => {
       resume: req.user.profile?.resume?.url || req.user.profile?.resume || "No resume uploaded"
     });
 
+    const applicantUser = await User.findById(applicantId);
     // Create Notification for Recruiter
     await Notification.create({
       recipient: job.postedBy,
-      message: `New application: ${req.user.name} applied for ${job.title}`,
+      message: `New application: ${applicantUser ? applicantUser.name : 'A candidate'} applied for ${job.title}`,
       type: "application",
       relatedJob: jobId,
     });
     return res.status(201).json(application);
   } catch (error) {
-    return res.status(401).json({ message: "Error in apply for Job" });
+    return res.status(500).json({ message: "Error in apply for Job" });
   }
 };
 
@@ -45,7 +47,8 @@ const getMyApplication = async (req, res) => {
   try {
     const applicantId = req.user._id;
 
-    const applications = await Application.findOne({
+    // Use find (not findOne) so all applications are returned as an array
+    const applications = await Application.find({
       applicant: applicantId,
     })
       .populate("job", "title companyName location jobType salary")
@@ -64,8 +67,8 @@ const getApplicationsForJob = async (req, res) => {
       return res.status(404).json({ message: "Job not found" });
     }
     // Check if the loggedin recruiter is the one who posted this job
-
-    if (job.postedBy.toString() !== recruiterId) {
+    // Both sides must be strings for comparison to work correctly
+    if (job.postedBy.toString() !== recruiterId.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to view applications for this job" });
@@ -80,10 +83,12 @@ const getApplicationsForJob = async (req, res) => {
 };
 const updateApplicationStatus = async (req, res) => {
   try {
-    const { status } = req.body; // Recruiters sends the statuses
+    let { status } = req.body; // Recruiters sends the statuses
     const recruiterId = req.user._id;
     const { appId } = req.params;
+    if (status) status = status.toLowerCase().trim();
     if (!["pending", "viewed", "shortlisted", "rejected", "selected"].includes(status)) {
+      console.error("Invalid status received:", req.body.status);
       return res.status(400).json({ message: "Invalid status value" });
     }
     const application = await Application.findById(appId);
@@ -95,7 +100,8 @@ const updateApplicationStatus = async (req, res) => {
       return res.status(404).json({ message: "Associated job not found" });
     }
     // check if loggedin recruiter posted this job
-    if (job.postedBy.toString() !== recruiterId) {
+    // Both sides must be strings for comparison to work correctly
+    if (job.postedBy.toString() !== recruiterId.toString()) {
       return res
         .status(403)
         .json({ message: "Not authorized to update this application" });

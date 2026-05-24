@@ -38,7 +38,7 @@ const PostJob = () => {
       await api.post("/jobs/create", formData); // Backend protected route
 
       toast.success("Job posted successfully! 🎉");
-      navigate("/recruiter-dashboard");
+      navigate("/recruiter-dashboard/manage-jobs");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to post job❗");
     } finally {
@@ -159,10 +159,10 @@ const PostJob = () => {
             onChange={handleChange}
             className="w-full bg-gray-50 border rounded-xl py-3 px-4 focus:border-[#7315c7] focus:ring-2 focus:ring-purple-100 outline-none transition"
           >
-            <option>Full-time</option>
-            <option>Part-time</option>
-            <option>Internship</option>
-            <option>Remote</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Internship">Internship</option>
+            <option value="Contract">Contract</option>
           </select>
 
           {/* Description */}

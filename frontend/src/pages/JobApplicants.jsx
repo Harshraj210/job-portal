@@ -4,6 +4,11 @@ import api from "../lib/axios";
 import toast from "react-hot-toast";
 import { Loader2, ArrowLeft, UserCircle2, BadgeCheck, MessageSquare, X } from "lucide-react";
 
+// Env-aware backend base URL (strips /api suffix)
+const BACKEND_URL = (
+  import.meta.env.VITE_API_URL || "https://job-portal-backend-3l3e.onrender.com/api"
+).replace(/\/api$/, "");
+
 const JobApplicants = () => {
   const { jobId } = useParams();
   const [applications, setApplications] = useState([]);
@@ -21,6 +26,14 @@ const JobApplicants = () => {
       setApplications(res.data || []);
       if (res.data.length > 0) {
         setJobTitle(res.data[0].job?.title || "");
+      } else {
+        // Fetch job title directly so header isn't "Job" when there are no applicants
+        try {
+          const jobRes = await api.get(`/jobs/${jobId}`);
+          setJobTitle(jobRes.data?.title || "");
+        } catch {
+          // non-critical — leave blank
+        }
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to load applications");
@@ -52,20 +65,21 @@ const JobApplicants = () => {
 
   const handleViewProfile = async (app) => {
       // If status is pending, mark as viewed automatically
-      if(app.status === 'pending') {
-          handleStatusChange(app._id, 'viewed');
+      if (app.status === "pending") {
+          handleStatusChange(app._id, "viewed");
       }
-      // Ideally this would open a modal with resume or navigate to profile
-      // For now we just ensure status updates
-      if(app.resume) {
-          const resumeUrl = typeof app.resume === 'string' ? app.resume : app.resume.url;
-          if(resumeUrl) {
-               window.open(`http://localhost:5000${resumeUrl}`, '_blank');
+      if (app.resume) {
+          // app.resume is stored as a path string like /uploads/resumes/xyz.pdf
+          const resumePath = typeof app.resume === "string" ? app.resume : app.resume?.url;
+          if (resumePath) {
+              // Build absolute URL using env-aware backend base
+              const url = resumePath.startsWith("http") ? resumePath : `${BACKEND_URL}${resumePath}`;
+              window.open(url, "_blank");
           } else {
-               toast("No resume available", {icon: "ℹ️"});
+              toast("No resume available", { icon: "ℹ️" });
           }
       } else {
-          toast("No resume available", {icon: "ℹ️"});
+          toast("No resume available", { icon: "ℹ️" });
       }
   };
 
