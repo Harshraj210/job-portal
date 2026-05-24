@@ -74,20 +74,13 @@ function App() {
           />
 
           {/* ── PUBLIC PAGES (accessible without login) ── */}
+          <Route path="/" element={<Home />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
           <Route path="/companies" element={<Companies />} />
           <Route path="/about" element={<About />} />
 
           {/* ── PROTECTED PAGES (require login) ── */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="/profile"
             element={
