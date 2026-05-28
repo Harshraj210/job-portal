@@ -27,6 +27,8 @@ import Notifications from "./pages/Notifications";
 import RecruiterInterviews from "./pages/RecruiterInterviews";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicOnlyRoute from "./components/PublicOnlyRoute";
+import ScrollToTop from "./components/ScrollToTop";
+import ComingSoon from "./pages/ComingSoon";
 
 // Routes where the global Navbar and Footer should be hidden so the
 // full-screen auth pages can render without chrome on top.
@@ -38,6 +40,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <ScrollToTop />
       <Toaster position="top-right" />
 
       {/* Navbar — hidden on full-screen auth pages */}
@@ -75,12 +78,43 @@ function App() {
 
           {/* ── PUBLIC PAGES (accessible without login) ── */}
           <Route path="/" element={<Home />} />
-          <Route path="/jobs" element={<Jobs />} />
-          <Route path="/jobs/:id" element={<JobDetails />} />
-          <Route path="/companies" element={<Companies />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/help" element={<ComingSoon />} />
+          <Route path="/privacy" element={<ComingSoon />} />
+          <Route path="/terms" element={<ComingSoon />} />
 
           {/* ── PROTECTED PAGES (require login) ── */}
+          <Route
+            path="/companies"
+            element={
+              <ProtectedRoute>
+                <Companies />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/jobs"
+            element={
+              <ProtectedRoute>
+                <Jobs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/jobs/:id"
+            element={
+              <ProtectedRoute>
+                <JobDetails />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile"
             element={

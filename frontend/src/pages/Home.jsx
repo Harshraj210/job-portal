@@ -11,6 +11,7 @@ import {
   Shield, Zap, Globe, CheckCircle2, Bell, Check,
 } from "lucide-react";
 import heroPng from "../assets/hero-professional.png";
+import AuthModal from "../components/AuthModal";
 
 // ── Animation variants ────────────────────────────────────────────────────────
 const fadeUp = (delay = 0) => ({
@@ -422,6 +423,8 @@ const Home = () => {
         </div>
       </section>
 
+      {/* ── AUTH MODAL (Auto-popup for unauthenticated users) ── */}
+      {!user && <AuthModal />}
     </div>
   );
 };
