@@ -74,7 +74,7 @@ const getApplicationsForJob = async (req, res) => {
         .json({ message: "Not authorized to view applications for this job" });
     }
     const applications = await Application.find({ job: jobId })
-      .populate("applicant", "name email")
+      .populate("applicant", "-password")
       .sort({ createdAt: 1 });
     return res.status(200).json(applications);
   } catch (error) {

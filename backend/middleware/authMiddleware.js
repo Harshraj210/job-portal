@@ -23,7 +23,6 @@ const protectRoute = (req, res, next) => {
     }
 
     if (!token) {
-      console.warn("[Auth] No token found — cookie:", !!req.cookies?.jwt, "| header:", req.headers.authorization || "none");
       return res.status(401).json({ message: "User not authenticated" });
     }
 

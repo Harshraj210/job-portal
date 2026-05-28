@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../lib/axios";
 import toast from "react-hot-toast";
-import { Edit, Trash2, Loader2, Briefcase } from "lucide-react";
+import { Edit, Trash2, Loader2, Briefcase, UsersRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const ManageJobs = () => {
@@ -94,20 +94,31 @@ const ManageJobs = () => {
               </div>
 
               <div className="flex items-center gap-3">
+                {/* View Applicants */}
+                <button
+                  onClick={() => navigate(`/job-applicants/${job._id}`)}
+                  className="flex items-center gap-1 text-sm font-medium text-purple-600 hover:text-purple-800 bg-purple-50 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  <UsersRound className="w-4 h-4" />
+                  Applicants
+                </button>
+
                 {/* Edit */}
                 <button
                   onClick={() => navigate(`/edit-job/${job._id}`)}
-                  className="text-blue-600 hover:text-blue-800"
+                  className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                  title="Edit Job"
                 >
-                  <Edit />
+                  <Edit className="w-5 h-5" />
                 </button>
 
                 {/* Delete */}
                 <button
                   onClick={() => deleteJob(job._id)}
-                  className="text-red-500 hover:text-red-700"
+                  className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                  title="Delete Job"
                 >
-                  <Trash2 />
+                  <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             </div>
