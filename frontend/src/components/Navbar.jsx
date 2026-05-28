@@ -47,12 +47,12 @@ const Navbar = () => {
     setIsOpen(false);
   };
 
-  const navLinks = [
-    ...(user ? [{ label: "Home", href: "/" }] : []),
+  const navLinks = user ? [
+    { label: "Home", href: "/" },
     { label: "Find Jobs", href: "/jobs" },
     { label: "Companies", href: "/companies" },
     { label: "About us", href: "/about" },
-  ];
+  ] : [];
 
   return (
     <>

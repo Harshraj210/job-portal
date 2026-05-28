@@ -10,12 +10,28 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkUser = async () => {
       try {
+        const token = localStorage.getItem("token");
         const storedUser = localStorage.getItem("user");
-        if (storedUser) {
+        
+        if (token && storedUser) {
+          // Temporarily set user to avoid flashing login screen
           setUser(JSON.parse(storedUser));
+          
+          // Validate token with backend
+          const res = await api.get("/auth/profile");
+          // Ensure we update with fresh data
+          if (res.data) {
+            setUser(res.data);
+            localStorage.setItem("user", JSON.stringify(res.data));
+          }
+        } else {
+            setUser(null);
         }
       } catch (error) {
-        console.error("Auth check failed", error);
+        console.error("Auth check failed (session invalid)", error);
+        setUser(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
       } finally {
         setLoading(false);
       }

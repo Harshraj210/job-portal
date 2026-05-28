@@ -42,6 +42,14 @@ api.interceptors.response.use(
         error.config?.url,
         "| token present:", !!localStorage.getItem("token")
       );
+      // Automatically clear session and redirect to login
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      
+      // Avoid redirecting if already on login or register pages
+      if (typeof window !== "undefined" && !window.location.pathname.match(/^\/(login|register)/)) {
+          window.location.href = "/login?expired=true";
+      }
     }
     return Promise.reject(error);
   }
