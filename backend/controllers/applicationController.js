@@ -2,6 +2,7 @@ import Application from "../models/applicationModel.js";
 import Job from "../models/jobModel.js";
 import Notification from "../models/NotificationModel.js";
 import User from "../models/userModel.js";
+import dashboardCacheService from "../services/dashboardCacheService.js";
 
 const applyForjob = async (req, res) => {
   try {
@@ -37,6 +38,11 @@ const applyForjob = async (req, res) => {
       type: "application",
       relatedJob: jobId,
     });
+
+    // Invalidate Caches
+    await dashboardCacheService.invalidateApplicantDashboard(applicantId);
+    await dashboardCacheService.invalidateRecruiterDashboard(job.postedBy);
+
     return res.status(201).json(application);
   } catch (error) {
     return res.status(500).json({ message: "Error in apply for Job" });
@@ -125,6 +131,10 @@ const updateApplicationStatus = async (req, res) => {
       });
     }
 
+    // Invalidate Caches
+    await dashboardCacheService.invalidateApplicantDashboard(application.applicant);
+    await dashboardCacheService.invalidateRecruiterDashboard(recruiterId);
+
     return res.status(200).json(application);
   } catch (error) {
     return res.status(500).json({
@@ -165,10 +175,32 @@ const sendRecruiterMessage = async (req, res) => {
     }
 };
 
+const applicantAnalytics = async (req, res) => {
+    try {
+        const applicantId = req.user._id;
+
+        const applications = await Application.find({ applicant: applicantId });
+        const user = await User.findById(applicantId);
+
+        const stats = {
+            applied: applications.length,
+            saved: user.savedJobs ? user.savedJobs.length : 0,
+            shortlisted: applications.filter(app => app.status === "shortlisted").length,
+            rejected: applications.filter(app => app.status === "rejected").length,
+            hired: applications.filter(app => app.status === "selected").length,
+        };
+
+        return res.status(200).json(stats);
+    } catch (error) {
+        return res.status(500).json({ message: "Server error generating applicant analytics" });
+    }
+};
+
 export {
   applyForjob,
   getApplicationsForJob,
   updateApplicationStatus,
   getMyApplication,
   sendRecruiterMessage,
+  applicantAnalytics,
 };
