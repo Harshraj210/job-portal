@@ -2,6 +2,7 @@ import express from "express"
 import { handleLogin,handleRegister,logOut,forgotPassword,requestotp,verifyOtp,resetPassword,updateProfile,getProfile, uploadResume, deleteResume } from "../controllers/userController.js"
 import { protectRoute } from "../middleware/authMiddleware.js"
 import sendEmail from "../utils/send_email.js";
+import { loginLimiter, registerLimiter } from "../middleware/rateLimiter.js";
 
 
 import multer from "multer";
@@ -40,8 +41,8 @@ const upload = multer({
 
 const router = express.Router();
 
-router.post("/register",handleRegister)
-router.post("/login",handleLogin)
+router.post("/register", registerLimiter, handleRegister)
+router.post("/login", loginLimiter, handleLogin)
 router.post("/logout",protectRoute,logOut);
 router.post("/profile/update",protectRoute,updateProfile);
 router.post("/upload-resume", protectRoute, upload.single('resume'), uploadResume);

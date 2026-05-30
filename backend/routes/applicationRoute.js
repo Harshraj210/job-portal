@@ -5,19 +5,25 @@ import {
   getApplicationsForJob,
   updateApplicationStatus,
   sendRecruiterMessage,
+  applicantAnalytics,
 } from "../controllers/applicationController.js";
 import {
   protectRoute,
   isApplicant,
   isRecruiter,
 } from "../middleware/authMiddleware.js";
+import cacheMiddleware from "../middleware/cacheMiddleware.js";
+import cacheKeys from "../utils/cacheKeys.js";
+import { applyJobLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
 
 // GET /my-applications MUST be declared before POST /:jobId
 // otherwise Express matches the literal string "my-applications" as a :jobId param
 router.get("/my-applications", protectRoute, isApplicant, getMyApplication);
-router.get("/analytics", protectRoute, isRecruiter, async (req, res) => {
+router.get("/applicant-analytics", protectRoute, isApplicant, cacheMiddleware((req) => cacheKeys.dashboardApplicant(req.user._id), 300), applicantAnalytics);
+
+router.get("/analytics", protectRoute, isRecruiter, cacheMiddleware((req) => cacheKeys.dashboardRecruiter(req.user._id), 300), async (req, res) => {
     try {
         const recruiterId = req.user._id;
         const { default: Job } = await import("../models/jobModel.js");
@@ -55,7 +61,7 @@ router.get("/analytics", protectRoute, isRecruiter, async (req, res) => {
         return res.status(500).json({ message: "Server error generating analytics" });
     }
 });
-router.post("/:jobId", protectRoute, isApplicant, applyForjob);
+router.post("/:jobId", protectRoute, isApplicant, applyJobLimiter, applyForjob);
 // Update an application's status
 router.get("/job/:jobId", protectRoute, isRecruiter, getApplicationsForJob);
 router.put(

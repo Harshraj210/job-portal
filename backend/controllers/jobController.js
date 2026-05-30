@@ -2,6 +2,9 @@ import User from "../models/userModel.js";
 import Job from "../models/jobModel.js";
 import Wishlist from "../models/WishlistModel.js";
 import sendEmail from "../utils/send_email.js";
+import cacheService from "../services/cacheService.js";
+import dashboardCacheService from "../services/dashboardCacheService.js";
+import cacheKeys from "../utils/cacheKeys.js";
 
 // public routes for appicants
 
@@ -16,10 +19,18 @@ const getallJobs = async (req, res) => {
 
 const getJobById = async (req, res) => {
   try {
+    const cacheKey = cacheKeys.jobDetails(req.params.id);
+    const cachedJob = await cacheService.getCache(cacheKey);
+    if (cachedJob) {
+      return res.status(200).json(cachedJob);
+    }
+
     const job = await Job.findById(req.params.id).populate("companyName");
     if (!job) {
       return res.status(404).json({ message: "Job not found buddy !!" });
     }
+
+    await cacheService.setCache(cacheKey, job, 600); // 10 minutes TTL
     return res.status(200).json(job);
   } catch (error) {
     return res.status(404).json({ message: "Server Error" });
@@ -71,6 +82,10 @@ const createJob = async (req, res) => {
       });
     });
 
+    // Invalidate Caches
+    await dashboardCacheService.invalidateJobCaches();
+    await dashboardCacheService.invalidateRecruiterDashboard(req.user._id);
+
     return res.status(201).json(job);
   } catch (error) {
     console.error(error);
@@ -107,6 +122,12 @@ const updateJob = async (req, res) => {
     const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
+
+    // Invalidate Caches
+    await dashboardCacheService.invalidateJobCaches();
+    await dashboardCacheService.invalidateJobDetail(req.params.id);
+    await dashboardCacheService.invalidateRecruiterDashboard(req.user._id);
+
     return res.status(200).json(updatedJob);
   } catch (error) {
     return res
@@ -128,6 +149,12 @@ const deleteJob = async (req, res) => {
         .json({ message: "Not authorized to delete this job" });
     }
     await job.deleteOne();
+
+    // Invalidate Caches
+    await dashboardCacheService.invalidateJobCaches();
+    await dashboardCacheService.invalidateJobDetail(req.params.id);
+    await dashboardCacheService.invalidateRecruiterDashboard(req.user._id);
+
     return res.status(200).json({ message: "Job removed successfully" });
   } catch (error) {
     return res
@@ -189,6 +216,8 @@ const saveJob = async (req, res) => {
     user.savedJobs.push(jobId);
     await user.save();
 
+    await dashboardCacheService.invalidateApplicantDashboard(userId);
+
     return res
       .status(200)
       .json({ message: "Job saved successfully", savedJobs: user.savedJobs });
@@ -210,6 +239,8 @@ const unsaveJob = async (req, res) => {
 
     user.savedJobs = user.savedJobs.filter((id) => id.toString() !== jobId);
     await user.save();
+
+    await dashboardCacheService.invalidateApplicantDashboard(userId);
 
     return res
       .status(200)

@@ -12,9 +12,11 @@ import jobRoutes from "./routes/jobRoute.js";
 import notificationRoutes from "./routes/notificationRoute.js";
 import interviewRoutes from "./routes/interviewRoute.js";
 import connectDB from "./Database/db.js";
+import { initRedis } from "./config/redis.js";
 
 dotenv.config();
 connectDB();
+initRedis();
 
 const app = express();
 const port = process.env.PORT || 5000;
